@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PDM</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="title_activity_display_message">DisplayMessageActivity</string>
+    <string name="title_activity_dsd">dsd</string>
+    <string name="title_activity_main2">Main2Activity</string>
+</resources>
