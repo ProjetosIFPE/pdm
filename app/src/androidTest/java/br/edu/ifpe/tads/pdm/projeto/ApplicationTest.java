@@ -1,4 +1,4 @@
-package br.edu.ifpe.tads.pdm.pdm;
+package br.edu.ifpe.tads.pdm.projeto;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
