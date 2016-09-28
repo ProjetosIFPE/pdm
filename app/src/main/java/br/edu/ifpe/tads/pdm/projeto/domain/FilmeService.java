@@ -57,7 +57,7 @@ public class FilmeService extends BaseService {
                     LOG.log(Level.SEVERE, e.getMessage(), e);
                 }
                 filme.setSinopse(jsonObject.getString("overview"));
-                filme.setUrlPoster(jsonObject.getString("poster_path"));
+                filme.setUrlPoster("https://image.tmdb.org/t/p/w500/" + jsonObject.getString("poster_path"));
                 filmes.add(filme);
             }
         } catch (JSONException e) {

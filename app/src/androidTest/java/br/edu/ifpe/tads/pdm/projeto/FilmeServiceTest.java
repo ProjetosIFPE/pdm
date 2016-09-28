@@ -25,7 +25,6 @@ import static junit.framework.Assert.assertTrue;
  * Created by Edmilson Santana on 26/09/2016.
  */
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class FilmeServiceTest {
 
 
