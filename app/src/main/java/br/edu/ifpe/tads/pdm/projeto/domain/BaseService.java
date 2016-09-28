@@ -29,7 +29,7 @@ public class BaseService {
         String body = "";
         try {
             Response response = client.newCall(request).execute();
-            body = response.body().toString();
+            body = response.body().string();
         } catch (IOException e) {
             LOG.log(Level.SEVERE, e.getMessage(), e);
         }

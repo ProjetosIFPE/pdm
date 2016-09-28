@@ -3,7 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.domain;
 import java.util.Date;
 
 /**
- * Created by EdmilsonS on 26/09/2016.
+ * Created by Edmilson Santana on 26/09/2016.
  */
 public class Filme {
 
