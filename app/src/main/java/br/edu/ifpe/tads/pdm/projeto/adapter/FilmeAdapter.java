@@ -1,6 +1,7 @@
 package br.edu.ifpe.tads.pdm.projeto.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,14 @@ public class FilmeAdapter extends ArrayAdapter<Filme> {
 
     public FilmeAdapter(Context context, int resource, Filme[] filmes) {
         super(context, resource);
+        Log.d("Adapter", "Filmes: " + filmes.length);
         this.filmes = filmes;
     }
 
+    @Override
+    public int getCount() {
+        return 20;
+    }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
@@ -47,11 +53,8 @@ public class FilmeAdapter extends ArrayAdapter<Filme> {
             holder = (ViewHolder) view.getTag();
         }
 
-        ImageView filmePoster = (ImageView) listItem.findViewById(R.id.filme_poster);
-        TextView filmeTitulo = (TextView) listItem.findViewById(R.id.filme_titulo);
-
-        Picasso.with(getContext()).load(filmes[position].getUrlPoster()).into(filmePoster);
-        filmeTitulo.setText(filmes[position].getTitulo());
+        Picasso.with(getContext()).load(filmes[position].getUrlPoster()).into(holder.filmePoster);
+        holder.filmeTitulo.setText(filmes[position].getTitulo());
 
         return listItem;
 
