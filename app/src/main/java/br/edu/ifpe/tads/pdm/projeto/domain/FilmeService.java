@@ -25,7 +25,7 @@ import br.edu.ifpe.tads.pdm.projeto.R;
 public class FilmeService extends BaseService {
 
 
-    private final String SEARCH_URL_TMDB = "https://api.themoviedb.org/3/search/movie?api_key={key}&language=pt-BR&query={titulo}";
+    private static final String SEARCH_URL_TMDB = "https://api.themoviedb.org/3/search/movie?api_key={key}&language=pt-BR&query={titulo}";
 
     /**
      * Realiza a consulta de filmes no TMDB, por título
@@ -33,10 +33,10 @@ public class FilmeService extends BaseService {
      * @param titulo
      * @return
      */
-    public List<Filme> getFilmes(Context context, String titulo){
+    public  List<Filme> getFilmes(Context context, String titulo){
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = SEARCH_URL_TMDB.replace("{key}", API_KEY).replace("{titulo}", titulo);
-        return this.parseJSON(super.get(url));
+        return parseJSON(get(url));
     }
 
     private List<Filme> parseJSON(String json) {

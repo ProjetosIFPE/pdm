@@ -13,16 +13,16 @@ import okhttp3.Response;
  */
 public class BaseService {
 
-    protected OkHttpClient client = new OkHttpClient();
+    protected  OkHttpClient client = new OkHttpClient();
 
-    protected Logger LOG = Logger.getLogger(getClass().getSimpleName());
+    protected  Logger LOG = Logger.getLogger(BaseService.class.getSimpleName());
 
     /**
      * Get a Url
      * @return String
      * @param url
      * */
-    public String get(String url) {
+    public  String get(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();

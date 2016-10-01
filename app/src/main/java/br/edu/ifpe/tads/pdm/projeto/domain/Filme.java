@@ -1,11 +1,16 @@
 package br.edu.ifpe.tads.pdm.projeto.domain;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Edmilson Santana on 26/09/2016.
  */
-public class Filme {
+
+public class Filme implements Serializable {
 
     private String titulo;
     private String sinopse;
@@ -43,4 +48,6 @@ public class Filme {
     public void setUrlPoster(String urlPoster) {
         this.urlPoster = urlPoster;
     }
+
+
 }

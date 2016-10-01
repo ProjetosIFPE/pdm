@@ -1,9 +1,11 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
+import android.app.SearchManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
@@ -22,8 +24,11 @@ public class BaseActivity extends AppCompatActivity {
      * */
     protected void setUpToolbar(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null ) {
+            setSupportActionBar(toolbar);
+        }
     }
+
 
     /**
      *  Inicia uma tarefa assíncrona

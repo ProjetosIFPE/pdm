@@ -1,83 +1,48 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import java.util.List;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
-import br.edu.ifpe.tads.pdm.projeto.domain.Filme;
-import br.edu.ifpe.tads.pdm.projeto.domain.FilmeService;
-import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
+import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 
 
+/**
+ * Created by Edmilson Santana on 30/09/2016.
+ */
 public class MainActivity extends BaseActivity {
-
-
-    private FilmeService filmeService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpToolbar();
-
-        filmeService = new FilmeService();
-
-        String titulo = "Matrix";
-
-        super.startTask(this.getFilmes(titulo));
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
     }
 
 
-    public TaskListener<Filme[]> getFilmes(final String titulo) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.createSearchWidget(menu);
+        return Boolean.TRUE;
+    }
 
-        return new TaskListener<Filme[]>() {
-            @Override
-            public Filme[] execute() throws Exception {
-                Filme[] filmes = new Filme[0];
-                 if ( filmeService != null ) {
-                    List<Filme> listaFilmes = filmeService.getFilmes(getContext(),
-                            titulo);
-                     Log.d(TAG, "Lista Filmes:  " + listaFilmes.size());
-                     filmes = listaFilmes.toArray(new Filme[listaFilmes.size()]);
-                }
-                return  filmes;
-            }
+    /**
+     * Configura o SearchView do menu da Toolbar com as configurações de pesquisa
+     * @param menu
+     * **/
+    public void createSearchWidget(Menu menu) {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
-            @Override
-            public void updateView(final Filme[] response) {
-                Log.d(TAG, "Resposta: " + response.length);
-                ListView listView = (ListView) findViewById(R.id.list_view);
-
-                listView.setAdapter( new FilmeAdapter(getContext(),
-                        R.layout.filme_listitem, response ));
-                listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(parent.getContext(), "Filme selecionado: " +
-                                response[position].getTitulo(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onError(Exception exception) {
-
-            }
-            @Override
-            public void onCancelled(String cod) {
-
-            }
-        };
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(Boolean.FALSE);
     }
 
 }
