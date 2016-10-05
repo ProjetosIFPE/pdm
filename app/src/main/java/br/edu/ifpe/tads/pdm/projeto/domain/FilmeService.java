@@ -66,4 +66,10 @@ public class FilmeService extends BaseService {
         return filmes;
     }
 
+
+    public List<Filme> getFilmes(Context context) {
+        List<Filme> filmes = new ArrayList<>();
+        return filmes;
+    }
+
 }

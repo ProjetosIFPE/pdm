@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="API_KEY_TMDB">2558bb678b1ae42190f22c3e11981994</string>
+    <string name="API_USERNAME_TUNEFIND">367ba6943e837253bc359e5b2068e688</string>
+    <string name="API_PASSWORD_TUNEFIND">93c59a5953d99ecd996f312ea53605de</string>
+    <string name="API_URL_TUNEFIND">www.tunefind.com/api/v1/</string>
+    <string name="TESTE_TUNEFIND">https://367ba6943e837253bc359e5b2068e688:93c59a5953d99ecd996f312ea53605de@www.tunefind.com/api/v1/movie?limit=10</string>
 </resources>

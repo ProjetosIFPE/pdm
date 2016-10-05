@@ -12,6 +12,7 @@ import java.util.Date;
 
 public class Filme implements Serializable {
 
+    private String id;
     private String titulo;
     private String sinopse;
     private Date dataLancamento;
@@ -50,4 +51,11 @@ public class Filme implements Serializable {
     }
 
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
