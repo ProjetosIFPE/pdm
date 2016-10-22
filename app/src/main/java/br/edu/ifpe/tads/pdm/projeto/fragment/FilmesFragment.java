@@ -1,5 +1,6 @@
 package br.edu.ifpe.tads.pdm.projeto.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
 import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
 import br.edu.ifpe.tads.pdm.projeto.domain.Filme;
 import br.edu.ifpe.tads.pdm.projeto.domain.FilmeService;
@@ -117,7 +119,11 @@ public class FilmesFragment extends BaseFragment {
             @Override
             public void onClickFilme(View view, int idx) {
                 Filme filme = filmes.get(idx);
-                Toast.makeText(getContext(), filme.getTitulo(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, filme.getTitulo());
+                Intent intent = new Intent(getContext(), FilmeActivity.class);
+                intent.putExtra(FilmeActivity.FILME, filme);
+                startActivity(intent);
+
             }
         };
     }
