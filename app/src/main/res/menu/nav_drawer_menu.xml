@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single" />
+    <item android:id="@+id/nav_item_filmes"
+        android:title="@string/inicio"
+        android:checked="true" />
+    <item android:id="@+id/nav_item_series"
+        android:title="@string/series"
+        android:checked="true" />
+    <item android:id="@+id/nav_item_acao"
+        android:title="@string/acao"
+        android:checked="true" />
+    <item android:id="@+id/nav_item_comedia"
+        android:title="@string/comedia"
+        android:checked="true" />
+</menu>
