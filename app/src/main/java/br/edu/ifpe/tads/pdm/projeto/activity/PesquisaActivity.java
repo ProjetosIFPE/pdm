@@ -4,7 +4,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
@@ -15,7 +14,7 @@ import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 /**
  * Created by Edmilson Santana on 30/09/2016.
  */
-public class FilmesActivity extends BaseActivity {
+public class PesquisaActivity extends BaseActivity {
 
 
     @Override
@@ -28,7 +27,7 @@ public class FilmesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filmes);
+        setContentView(R.layout.activity_pesquisa);
         setUpToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(Boolean.TRUE);
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);

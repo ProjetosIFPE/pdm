@@ -22,7 +22,7 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".activity.FilmesActivity" />
+                android:value=".activity.PesquisaActivity" />
         </activity>
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
@@ -32,7 +32,7 @@
             android:label="@string/title_activity_player"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.FilmesActivity"
+            android:name=".activity.PesquisaActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

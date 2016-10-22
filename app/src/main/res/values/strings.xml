@@ -11,4 +11,8 @@
     <string name="series">Séries</string>
     <string name="acao">Ação</string>
     <string name="comedia">Comédias</string>
+    
+    <string name="categoria_em_alta">EM ALTA</string>
+    <string name="categoria_favoritos">FAVORITOS</string>
+    <string name="categoria_lancamentos">LANÇAMENTOS</string>
 </resources>
