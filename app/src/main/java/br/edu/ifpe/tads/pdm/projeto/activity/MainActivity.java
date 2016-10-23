@@ -61,7 +61,7 @@ public class MainActivity extends BaseActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-        
+
         int cor = ContextCompat.getColor(getContext(), R.color.white);
 
         tabLayout.setTabTextColors(cor, cor);

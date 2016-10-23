@@ -2,6 +2,7 @@ package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -73,6 +74,12 @@ public class BaseActivity extends AppCompatActivity {
                     openDrawner();
                     return Boolean.TRUE;
                 }
+                break;
+            case R.id.action_play:
+                Intent intent = new Intent(getContext(),
+                        MediaPlayerActivity.class);
+                startActivity(intent);
+                break;
         }
         return  super.onOptionsItemSelected(item);
     }

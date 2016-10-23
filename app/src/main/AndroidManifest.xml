@@ -3,6 +3,7 @@
     package="br.edu.ifpe.tads.pdm.projeto">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +29,7 @@
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".activity.PlayerActivity"
+            android:name=".activity.SpotifyPlayerActivity"
             android:label="@string/title_activity_player"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -47,7 +48,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
-        <activity android:name=".activity.FilmeActivity"></activity>
+        <activity android:name=".activity.FilmeActivity" />
+
+        <service android:name=".service.PlayerService" />
+
+        <activity android:parentActivityName=".activity.MainActivity" android:name=".activity.MediaPlayerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

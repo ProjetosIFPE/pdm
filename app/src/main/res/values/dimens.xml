@@ -11,5 +11,6 @@
     <!-- Dimensões do menu de navegação lateral -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="capa_album_height">200dp</dimen>
 
 </resources>
