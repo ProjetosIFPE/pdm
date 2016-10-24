@@ -3,6 +3,11 @@ package br.edu.ifpe.tads.pdm.projeto.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import org.parceler.apache.commons.lang.StringUtils;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
@@ -16,17 +21,23 @@ public class FilmeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filme);
+        setUpToolbar();
+        setUpNavDrawer();
 
-        Intent intent = getIntent();
+        Filme filme = (Filme) getIntent().getSerializableExtra(FilmeActivity.FILME);
 
-        Filme filme = (Filme) intent.getSerializableExtra(FilmeActivity.FILME);
-        Log.d(TAG, filme.getTitulo());
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(FilmeActivity.FILME, filme);
+        ImageView appBarImg = (ImageView) findViewById(R.id.appBarImg);
+        if (StringUtils.isNotEmpty(filme.getUrlPoster())) {
+            Picasso.with(getContext()).load(filme.getUrlPoster()).fit().into(appBarImg);
+        }
 
-        FilmeFragment filmeFragment = FilmeFragment.newInstance(arguments);
+        if (savedInstanceState == null) {
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(FilmeActivity.FILME, filme);
+            FilmeFragment filmeFragment = FilmeFragment.newInstance(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.filme_fragment, filmeFragment).commit();
+        }
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, filmeFragment).commit();
     }
 }

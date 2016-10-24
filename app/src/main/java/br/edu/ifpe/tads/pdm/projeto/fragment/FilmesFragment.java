@@ -76,9 +76,11 @@ public class FilmesFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_filmes, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         progressRecyclerView = (ProgressBar) view.findViewById(R.id.progressRecyclerView);
+
         recyclerView.setLayoutManager( new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(Boolean.TRUE);
+
         return view;
     }
 
@@ -237,7 +239,9 @@ public class FilmesFragment extends BaseFragment {
     * */
     private  void updateAdapterRecylerView(List<Filme> list) {
         if ( recyclerView.getAdapter() == null ) {
+
             recyclerView.setAdapter(new FilmeAdapter(getContext(), list, onClickFilme()));
+
             filmes = list;
         } else {
             filmes.clear();

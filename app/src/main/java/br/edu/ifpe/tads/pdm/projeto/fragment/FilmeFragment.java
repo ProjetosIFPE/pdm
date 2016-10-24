@@ -39,10 +39,7 @@ public class FilmeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle b){
         View view = inflater.inflate(R.layout.fragment_filme, container, false);
-        ImageView filmePoster = (ImageView) view.findViewById(R.id.filme_poster);
         TextView filmeDescricao = (TextView) view.findViewById(R.id.filme_descricao);
-        // Carrega a imagem da url do serviço de filmes e ajusta(fit) no (into) ImageView
-        Picasso.with(getContext()).load(filme.getUrlPoster()).fit().into(filmePoster);
         filmeDescricao.setText(filme.getSinopse());
         return view;
     }
