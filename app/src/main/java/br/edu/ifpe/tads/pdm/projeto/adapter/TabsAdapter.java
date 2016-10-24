@@ -36,7 +36,14 @@ public class TabsAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Bundle arguments = new Bundle();
-        arguments.putString(FilmesFragment.FILMES_POR_TITULO, "Esquadrão Suicida");
+        switch (position) {
+            case 0:
+                arguments.putBoolean(FilmesFragment.FILMES_POR_POPULARIDADE, Boolean.TRUE);
+                break;
+            case 1:
+                arguments.putBoolean(FilmesFragment.FILMES_POR_DATA_LANCAMENTO, Boolean.TRUE);
+                break;
+        }
         return FilmesFragment.newInstance(arguments);
     }
 

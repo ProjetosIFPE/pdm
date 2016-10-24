@@ -1,13 +1,11 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.domain.Filme;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmeFragment;
 
 public class FilmeActivity extends BaseActivity {

@@ -12,10 +12,12 @@ import android.widget.ProgressBar;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.parceler.apache.commons.lang.StringUtils;
+
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.domain.Filme;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 
 /**
  * Created by Edmilson Santana on 30/09/2016.
@@ -50,10 +52,10 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
         Filme filme = filmes.get(position);
 
         holder.progressBar.setVisibility(View.VISIBLE);
-
-        Picasso.with(context).load(filme.getUrlPoster()).fit().into(holder.img,
-                this.getImageLoadCallback(holder));
-
+        if (StringUtils.isNotEmpty(filme.getUrlPoster())) {
+            Picasso.with(context).load(filme.getUrlPoster()).fit().into(holder.img,
+                    this.getImageLoadCallback(holder));
+        }
         holder.itemView.setOnClickListener(getOnClickListener(holder, position));
     }
 

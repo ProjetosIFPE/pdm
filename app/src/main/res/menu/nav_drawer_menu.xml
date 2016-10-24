@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single" />
-    <item android:id="@+id/nav_item_filmes"
+    <item android:id="@+id/nav_item_inicio"
         android:title="@string/inicio"
         android:checked="true" />
-    <item android:id="@+id/nav_item_series"
-        android:title="@string/series"
-        android:checked="true" />
-    <item android:id="@+id/nav_item_acao"
-        android:title="@string/acao"
-        android:checked="true" />
-    <item android:id="@+id/nav_item_comedia"
-        android:title="@string/comedia"
-        android:checked="true" />
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_item_acao"
+            android:title="@string/acao"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_comedia"
+            android:title="@string/comedia"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_drama"
+            android:title="@string/drama"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_fantasia"
+            android:title="@string/fantasia"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_romance"
+            android:title="@string/romance"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_ficcao"
+            android:title="@string/ficcao"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_terror"
+            android:title="@string/terror"
+            android:checked="true" />
+        <item android:id="@+id/nav_item_guerra"
+            android:title="@string/guerra"
+            android:checked="true" />
+    </group>
+    <item android:title="Outro">
+        <menu>
+            <item
+                android:id="@+id/nav_about_us"
+                android:title="@string/nav_item_sobre" />
+            <item
+                android:id="@+id/nav_privacy_policy"
+                android:title="@string/nav_item_politica" />
+        </menu>
+    </item>
 </menu>
