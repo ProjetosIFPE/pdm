@@ -110,7 +110,6 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
         public FilmeViewHolder(View itemView) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.filme_poster);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressImg);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
     }

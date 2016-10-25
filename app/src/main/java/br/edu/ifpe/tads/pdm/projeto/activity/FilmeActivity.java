@@ -9,6 +9,7 @@ import android.view.View;
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.Filme;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmeFragment;
+import br.edu.ifpe.tads.pdm.projeto.fragment.PlaylistFragment;
 
 public class FilmeActivity extends BaseActivity {
 
@@ -28,7 +29,12 @@ public class FilmeActivity extends BaseActivity {
 
         FilmeFragment filmeFragment = FilmeFragment.newInstance(arguments);
 
+        Bundle bundle = new Bundle();
+        PlaylistFragment playlistFragment = PlaylistFragment.newInstance(bundle);
+
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, filmeFragment).commit();
+                .add(R.id.fragment_container, filmeFragment).add(R.id.fragment_listmusic,playlistFragment).commit();
+
+
     }
 }
