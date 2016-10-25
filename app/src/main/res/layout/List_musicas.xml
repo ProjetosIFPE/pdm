@@ -6,8 +6,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:padding="16dp"
-            android:background="@color/test">
+            android:padding="16dp">
 
             <ImageView
                 android:id="@+id/icone_play"

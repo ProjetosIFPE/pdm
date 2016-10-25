@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 
 /**
  * Created by Douglas Albuquerque on 23/10/2016.
@@ -27,11 +28,12 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
 
     private final List<String> musicas;
 
-    public MusicaAdapter(Context context,MusicaOnClickListener musicaOnClickListener) {
+    public MusicaAdapter(Context context, List<Musica> musicas, MusicaOnClickListener musicaOnClickListener) {
         this.context = context;
         this.musicas = createListOfMusic();
         this.musicaOnClickListener = musicaOnClickListener;
     }
+
 
 
     @Override

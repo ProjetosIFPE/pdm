@@ -3,7 +3,11 @@ package br.edu.ifpe.tads.pdm.projeto.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -14,7 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.List;
+
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
+import br.edu.ifpe.tads.pdm.projeto.application.ApplicationService;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
+import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
@@ -25,7 +37,13 @@ public class BaseActivity extends AppCompatActivity {
 
     protected final String TAG = getClass().getSimpleName();
 
+    private final int MENU_GROUP_ID = 1;
+
     protected DrawerLayout drawerLayout;
+
+    protected NavigationView navigationView;
+
+    protected static int navIndexItem = 0;
 
     /**
      * Aplica a Toolbar como Action Bar
@@ -48,7 +66,7 @@ public class BaseActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(Boolean.TRUE);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         if (navigationView != null && drawerLayout != null) {
             navigationView.setNavigationItemSelectedListener(
@@ -62,6 +80,45 @@ public class BaseActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+
+    /**
+     * Eventos de click no menu de navegação lateral
+     * @param
+     */
+    public void onNavDrawerItemSelected(MenuItem menuItem) {
+        Intent intent = null;
+        switch (menuItem.getItemId()) {
+            case R.id.nav_item_inicio:
+                intent = new Intent(getContext(), MainActivity.class);
+                break;
+            default:
+                intent = new Intent(getContext(), CategoriaActivity.class);
+                intent.putExtra(CategoriaActivity.CATEGORIA_FILME, menuItem.getTitle());
+        }
+
+        startActivity(intent);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.createSearchWidget(menu);
+        return Boolean.TRUE;
+    }
+
+    /**
+     * Configura o SearchView do menu da Toolbar com as configurações de pesquisa
+     * @param menu
+     * **/
+    public void createSearchWidget(Menu menu) {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
     }
 
 
@@ -86,13 +143,6 @@ public class BaseActivity extends AppCompatActivity {
 
 
 
-    /**
-     * Eventos de click no menu de navegação lateral
-     * @param menuItem
-     */
-    public static void onNavDrawerItemSelected(MenuItem menuItem) {
-
-    }
 
     /**
      * Abrir menu de navegação lateral

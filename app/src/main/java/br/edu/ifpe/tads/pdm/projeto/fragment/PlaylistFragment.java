@@ -11,13 +11,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.adapter.MusicaAdapter;
+import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 
 
 public class PlaylistFragment extends Fragment {
 
     protected RecyclerView recyclerView;
+
+    private List<Musica> musicas;
 
     public  static PlaylistFragment newInstance(Bundle bundle) {
         PlaylistFragment playlistFragment = new PlaylistFragment();
@@ -44,5 +51,16 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
     }
+
+    public  MusicaAdapter.MusicaOnClickListener onClickMusica() {
+        return new MusicaAdapter.MusicaOnClickListener() {
+            @Override
+            public void onClickMusica(View view, int idx) {
+                Toast.makeText(getContext(), "Clicou música", Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
 }

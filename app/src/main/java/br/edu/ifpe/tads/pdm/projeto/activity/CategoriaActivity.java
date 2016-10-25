@@ -1,21 +1,17 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.support.v7.widget.SearchView;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 
-/**
- * Created by Edmilson Santana on 30/09/2016.
- */
-public class PesquisaActivity extends BaseActivity {
+public class CategoriaActivity extends BaseActivity {
 
+    public static final String CATEGORIA_FILME = "CATEGORIA_FILME";
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -27,24 +23,20 @@ public class PesquisaActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pesquisa);
+        setContentView(R.layout.activity_categoria);
         setUpToolbar();
         setUpNavDrawer();
 
-        if ( savedInstanceState == null ) {
+        if (savedInstanceState == null) {
             doSearch(Boolean.TRUE);
         }
-
     }
 
-    private void doSearch(Boolean firstSearch) {
+    public void doSearch(Boolean firstSearch) {
+        String categoria =  getIntent()
+                .getStringExtra(CATEGORIA_FILME);
 
-        String titulo = "";
-        Intent intent = getIntent();
-
-        if ( Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            titulo = intent.getStringExtra(SearchManager.QUERY);
-        }
+        getSupportActionBar().setTitle(categoria);
 
         if ( firstSearch ) {
             Bundle arguments = new Bundle();
@@ -54,9 +46,7 @@ public class PesquisaActivity extends BaseActivity {
         } else {
             FilmesFragment filmesFragment = (FilmesFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.filmes_fragment);
-            filmesFragment.consultarFilmes(titulo);
+            filmesFragment.consultarFilmesPorCategoria(categoria);
         }
     }
-
-
 }
