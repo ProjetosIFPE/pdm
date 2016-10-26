@@ -10,8 +10,4 @@ public interface TaskListener<T> {
 
     void updateView(T  response);
 
-    void onError(Exception exception);
-
-    void onCancelled(String cod);
-
 }

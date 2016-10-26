@@ -28,6 +28,8 @@ public class MainActivity extends BaseActivity {
         setUpToolbar();
         setUpNavDrawer();
         setUpViewPagerTabs();
+
+        getSupportActionBar().setTitle(R.string.inicio);
     }
 
 

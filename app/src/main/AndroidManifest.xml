@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".application.ApplicationService"
@@ -54,13 +55,16 @@
         <service android:name=".service.PlayerService" />
 
         <activity
+            android:launchMode="singleTop"
             android:name=".activity.MediaPlayerActivity"
             android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
-        <activity android:launchMode="singleTop" android:name=".activity.CategoriaActivity"></activity>
+        <activity
+            android:name=".activity.CategoriaActivity"
+            android:launchMode="singleTop" />
     </application>
 
 </manifest>

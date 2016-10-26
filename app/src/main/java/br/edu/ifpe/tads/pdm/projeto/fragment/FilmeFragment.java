@@ -6,10 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
@@ -33,6 +30,13 @@ public class FilmeFragment extends BaseFragment {
         Log.d(TAG, String.valueOf(arguments.size()));
         if ( arguments != null ) {
             this.filme = (Filme) arguments.getSerializable(FilmeActivity.FILME);
+
+            Bundle musicasFragmentArgs = new Bundle();
+            musicasFragmentArgs.putSerializable(MusicasFragment.FILME, filme);
+            MusicasFragment musicasFragment = MusicasFragment.newInstance(musicasFragmentArgs);
+
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.fragment_musicas, musicasFragment).commit();
         }
     }
 
@@ -43,6 +47,5 @@ public class FilmeFragment extends BaseFragment {
         filmeDescricao.setText(filme.getSinopse());
         return view;
     }
-
 
 }

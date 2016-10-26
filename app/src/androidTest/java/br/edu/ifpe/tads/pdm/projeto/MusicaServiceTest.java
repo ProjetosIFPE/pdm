@@ -45,5 +45,16 @@ public class MusicaServiceTest extends BaseTestCase{
         assertEquals("My Own Summer (Shove It)", musica.getTitulo());
     }
 
+    @Test
+    public void testGetMusicasFilmeComCaracterEspecial() {
+        String querySearch = "50/50";
+        List<Filme> filmes = filmeService.getFilmes(getContext(), querySearch);
+        Filme filme = filmes.get(0);
+
+        List<Musica> musicas = musicaService.getMusicas(getContext(), filme);
+        assertFalse(musicas.isEmpty());
+
+    }
+
 
 }

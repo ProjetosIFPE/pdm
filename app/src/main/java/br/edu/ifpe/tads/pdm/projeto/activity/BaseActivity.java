@@ -3,11 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -18,22 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.List;
-
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
-import br.edu.ifpe.tads.pdm.projeto.application.ApplicationService;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
-import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 /**
  * Created by Edmilson Santana on 26/09/2016.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity  {
 
     protected final String TAG = getClass().getSimpleName();
 
@@ -55,6 +43,7 @@ public class BaseActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
         }
     }
+
 
     /**
      *  Configura o menu lateral
@@ -131,11 +120,6 @@ public class BaseActivity extends AppCompatActivity {
                     openDrawner();
                     return Boolean.TRUE;
                 }
-                break;
-            case R.id.action_play:
-                Intent intent = new Intent(getContext(),
-                        MediaPlayerActivity.class);
-                startActivity(intent);
                 break;
         }
         return  super.onOptionsItemSelected(item);

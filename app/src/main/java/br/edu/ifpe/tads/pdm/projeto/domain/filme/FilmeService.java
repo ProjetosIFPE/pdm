@@ -2,14 +2,12 @@ package br.edu.ifpe.tads.pdm.projeto.domain.filme;
 
 import android.content.Context;
 
-import org.parceler.apache.commons.lang.time.DateFormatUtils;
-
 import java.util.Calendar;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.BaseService;
-import br.edu.ifpe.tads.pdm.projeto.util.Util;
+import br.edu.ifpe.tads.pdm.projeto.util.DateUtil;
 
 /**
  * Created by Edmilson Santana on 26/09/2016.
@@ -57,7 +55,7 @@ public class FilmeService extends BaseService {
         String url = URL_PESQUISA_FILME_POR_LANCAMENTO
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
                 .replace("{key}", API_KEY)
-                .replace("{release-date}", Util.dateToString(Calendar.getInstance()))
+                .replace("{release-date}", DateUtil.dateToString(Calendar.getInstance()))
                 .replace("{sort}", TMDBParameters.ORDER_BY_RELEASE_DATE_DESC)
                 .replace("{page}", FilmeService.TMDBParameters.FIRST_PAGE);
         return super.parseJson(Filme[].class, get(url), Filme.ROOT_JSON_OBJECT);
@@ -125,6 +123,7 @@ public class FilmeService extends BaseService {
                 .replace("{language}", TMDBParameters.LANGUAGE_PT_BR);
         return super.parseJson(Filme[].class, get(url), Filme.ROOT_JSON_OBJECT);
     }
+
 
 
 

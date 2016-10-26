@@ -48,6 +48,7 @@ public class PesquisaActivity extends BaseActivity {
 
         if ( firstSearch ) {
             Bundle arguments = new Bundle();
+            arguments.putString(FilmesFragment.FILMES_POR_TITULO, titulo);
             FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.filmes_fragment, filmesFragment).commit();

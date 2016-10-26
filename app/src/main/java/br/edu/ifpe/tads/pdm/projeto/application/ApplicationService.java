@@ -3,6 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.application;
 import android.app.Application;
 
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
+import br.edu.ifpe.tads.pdm.projeto.domain.musica.MusicaService;
 
 /**
  * Created by Edmilson on 23/10/2016.
@@ -16,6 +17,8 @@ public class ApplicationService extends Application {
 
     private FilmeService filmeService;
 
+    private MusicaService musicaService;
+
     public static ApplicationService getInstance() {
         return instance;
     }
@@ -24,10 +27,15 @@ public class ApplicationService extends Application {
         return filmeService;
     }
 
+    public MusicaService getMusicaService() {
+        return musicaService;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
         filmeService = new FilmeService();
+        musicaService = new MusicaService();
     }
 }

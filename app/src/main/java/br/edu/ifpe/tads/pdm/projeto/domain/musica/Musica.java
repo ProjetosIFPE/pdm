@@ -3,11 +3,13 @@ package br.edu.ifpe.tads.pdm.projeto.domain.musica;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by Edmilson on 23/10/2016.
  */
 
-public class Musica {
+public class Musica implements Serializable {
 
     @SerializedName("id")
     private Long id;
@@ -60,5 +62,21 @@ public class Musica {
 
     public void setDescricaoCena(String descricaoCena) {
         this.descricaoCena = descricaoCena;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Musica musica = (Musica) o;
+
+        return id != null ? id.equals(musica.id) : musica.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

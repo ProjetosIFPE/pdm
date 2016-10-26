@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/nav_item_inicio"
-        android:title="@string/inicio"
-        android:checked="true" />
+        android:title="@string/inicio" />
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_item_acao"
-            android:title="@string/acao"
-            android:checked="true" />
+            android:title="@string/acao" />
         <item android:id="@+id/nav_item_comedia"
-            android:title="@string/comedia"
-            android:checked="true" />
+            android:title="@string/comedia" />
         <item android:id="@+id/nav_item_drama"
-            android:title="@string/drama"
-            android:checked="true" />
+            android:title="@string/drama" />
         <item android:id="@+id/nav_item_fantasia"
-            android:title="@string/fantasia"
-            android:checked="true" />
+            android:title="@string/fantasia" />
         <item android:id="@+id/nav_item_romance"
-            android:title="@string/romance"
-            android:checked="true" />
+            android:title="@string/romance" />
         <item android:id="@+id/nav_item_ficcao"
-            android:title="@string/ficcao"
-            android:checked="true" />
+            android:title="@string/ficcao" />
         <item android:id="@+id/nav_item_terror"
-            android:title="@string/terror"
-            android:checked="true" />
+            android:title="@string/terror" />
         <item android:id="@+id/nav_item_guerra"
-            android:title="@string/guerra"
-            android:checked="true" />
+            android:title="@string/guerra"/>
     </group>
     <item android:title="Outro">
         <menu>

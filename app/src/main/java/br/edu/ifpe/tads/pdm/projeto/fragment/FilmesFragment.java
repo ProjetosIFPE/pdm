@@ -76,7 +76,6 @@ public class FilmesFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_filmes, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         progressRecyclerView = (ProgressBar) view.findViewById(R.id.progressRecyclerView);
-
         recyclerView.setLayoutManager( new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(Boolean.TRUE);
@@ -124,14 +123,6 @@ public class FilmesFragment extends BaseFragment {
                 updateAdapterRecylerView(response);
             }
 
-            @Override
-            public void onError(Exception exception) {
-
-            }
-            @Override
-            public void onCancelled(String cod) {
-
-            }
         };
     }
 
@@ -157,14 +148,6 @@ public class FilmesFragment extends BaseFragment {
                 updateAdapterRecylerView(response);
             }
 
-            @Override
-            public void onError(Exception exception) {
-
-            }
-            @Override
-            public void onCancelled(String cod) {
-
-            }
         };
     }
 
@@ -191,14 +174,6 @@ public class FilmesFragment extends BaseFragment {
                 updateAdapterRecylerView(response);
             }
 
-            @Override
-            public void onError(Exception exception) {
-
-            }
-            @Override
-            public void onCancelled(String cod) {
-
-            }
         };
     }
     /**
@@ -222,14 +197,6 @@ public class FilmesFragment extends BaseFragment {
                 updateAdapterRecylerView(response);
             }
 
-            @Override
-            public void onError(Exception exception) {
-
-            }
-            @Override
-            public void onCancelled(String cod) {
-
-            }
         };
     }
 

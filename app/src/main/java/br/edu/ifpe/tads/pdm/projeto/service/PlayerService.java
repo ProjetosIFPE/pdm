@@ -4,34 +4,27 @@ package br.edu.ifpe.tads.pdm.projeto.service;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.IInterface;
-import android.os.Parcel;
 import android.os.PowerManager;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
+import java.io.Serializable;
 
-import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.activity.MediaPlayerActivity;
+import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 import br.edu.ifpe.tads.pdm.projeto.util.NotificationUtil;
 
 /**
  * Created by Edmilson on 22/10/2016.
  */
 
-public class PlayerService extends Service {
+public class PlayerService extends Service implements Serializable{
 
-    public static final String ACTION_PLAY = "br.edu.ifpe.tads.pdm.projeto.action.PLAY";
-
-    private static final String URL_MUSIC = "urlMusic";
+    public static final String MUSICA = "MUSICA";
 
     private final String TAG = getClass().getSimpleName();
 
@@ -41,7 +34,11 @@ public class PlayerService extends Service {
 
     private MediaPlayer mediaPlayer;
 
+    private Musica musica;
+
     private final IBinder playerServiceBinder = new PlayerServiceBinder();
+
+    private PlayerServiceCallbacks playerServiceCallbacks;
 
     @Override
     public void onDestroy() {
@@ -64,23 +61,24 @@ public class PlayerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        String urlMusic = intent.getStringExtra(URL_MUSIC);
-        initializeMediaPlayer(urlMusic);
-        startForeground(NOTIFICATION_ID, createNotification());
+        this.musica  = (Musica) intent.getSerializableExtra(MUSICA);
+
+        startForeground(NOTIFICATION_ID, createNotification(musica));
+
 
         return START_STICKY_COMPATIBILITY;
     }
 
-    public Notification createNotification(){
+    public Notification createNotification(Musica musica){
         Intent intent = new Intent(getApplicationContext(), MediaPlayerActivity.class);
         return NotificationUtil.createNotification(getApplicationContext(), intent,
-                "Soundtrack", "Tocando música", Boolean.FALSE);
+                "Playing", musica.getTitulo(), Boolean.FALSE);
     }
 
-    private void initializeMediaPlayer(String urlMusic) {
+    public void initializeMediaPlayer() {
         try {
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.music);
-          //  mediaPlayer.setDataSource(urlMusic);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(musica.getUrlMusica());
             mediaPlayer.setOnPreparedListener(onPlayerPreparedListener());
             mediaPlayer.setOnErrorListener(onPlayerErrorListener());
             mediaPlayer.setOnCompletionListener(onPlayerCompletionListener());
@@ -105,7 +103,7 @@ public class PlayerService extends Service {
         return new OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                mediaPlayer.start();
+                playerServiceCallbacks.onStart(mediaPlayer);
             }
         };
     }
@@ -117,6 +115,24 @@ public class PlayerService extends Service {
                 stopSelf();
             }
         };
+    }
+
+    public void startMediaPlayer() {
+        if (!isMediaPlayerPlaying()) {
+            mediaPlayer.start();
+        }
+    }
+
+    public void pauseMediaPlayer() {
+        if (isMediaPlayerPlaying()) {
+            mediaPlayer.pause();
+        }
+    }
+
+    public void stopMediaPlayer() {
+        if (isMediaPlayerPlaying()) {
+            mediaPlayer.stop();
+        }
     }
 
     public boolean isMediaPlayerPlaying() {
@@ -139,11 +155,34 @@ public class PlayerService extends Service {
         }
     }
 
+    public int getMediaPlayerDuration() {
+        return mediaPlayer.getDuration();
+    }
 
+    public void onMediaPlayerSeek(int position){
+        mediaPlayer.seekTo(position);
+    }
+
+
+    public int getMediaPlayerCurrentPosition() {
+        return mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0;
+    }
+
+    public void setPlayerServiceCallbacks(PlayerServiceCallbacks playerServiceCallbacks) {
+        this.playerServiceCallbacks = playerServiceCallbacks;
+    }
 
     public class PlayerServiceBinder extends Binder {
+
         public PlayerService getService() {
             return PlayerService.this;
         }
     }
+
+    public interface PlayerServiceCallbacks {
+        void onStart(MediaPlayer mediaPlayer);
+        void onStop(MediaPlayer mediaPlayer);
+    }
+
+
 }

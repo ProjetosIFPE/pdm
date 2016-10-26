@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 
 public class CategoriaActivity extends BaseActivity {
@@ -40,12 +41,13 @@ public class CategoriaActivity extends BaseActivity {
 
         if ( firstSearch ) {
             Bundle arguments = new Bundle();
+            arguments.putString(FilmesFragment.FILMES_POR_CATEGORIA, categoria);
             FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.filmes_fragment, filmesFragment).commit();
+                    .add(R.id.fragment_filmes, filmesFragment).commit();
         } else {
             FilmesFragment filmesFragment = (FilmesFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.filmes_fragment);
+                    .findFragmentById(R.id.fragment_filmes);
             filmesFragment.consultarFilmesPorCategoria(categoria);
         }
     }

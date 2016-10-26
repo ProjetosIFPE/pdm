@@ -1,5 +1,6 @@
 package br.edu.ifpe.tads.pdm.projeto.domain.filme;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.apache.commons.lang.StringUtils;
@@ -23,6 +24,9 @@ public class Filme implements Serializable {
     @SerializedName("title")
     private String titulo;
 
+    @SerializedName("original_title")
+    private String tituloOriginal;
+
     @SerializedName("overview")
     private String sinopse;
 
@@ -31,6 +35,9 @@ public class Filme implements Serializable {
 
     @SerializedName("poster_path")
     private String urlPoster;
+
+    @SerializedName("backdrop_path")
+    private String urlPlanoFundo;
 
     private List<Categoria> categorias;
 
@@ -64,6 +71,14 @@ public class Filme implements Serializable {
         this.dataLancamento = dataLancamento;
     }
 
+    public String getTituloOriginal() {
+        return tituloOriginal;
+    }
+
+    public void setTituloOriginal(String tituloOriginal) {
+        this.tituloOriginal = tituloOriginal;
+    }
+
     public String getUrlPoster() {
         return StringUtils.isNotEmpty(urlPoster)? BASE_URL_POSTER.concat(urlPoster) : "";
     }
@@ -78,6 +93,14 @@ public class Filme implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUrlPlanoFundo() {
+        return StringUtils.isNotEmpty(urlPoster)? BASE_URL_POSTER.concat(urlPlanoFundo) : "";
+    }
+
+    public void setUrlPlanoFundo(String urlPlanoFundo) {
+        this.urlPlanoFundo = urlPlanoFundo;
     }
 
     public Musica getMusica(int index) {

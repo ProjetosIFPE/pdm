@@ -26,11 +26,11 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
 
     private MusicaOnClickListener musicaOnClickListener;
 
-    private final List<String> musicas;
+    private final List<Musica> musicas;
 
     public MusicaAdapter(Context context, List<Musica> musicas, MusicaOnClickListener musicaOnClickListener) {
         this.context = context;
-        this.musicas = createListOfMusic();
+        this.musicas = musicas;
         this.musicaOnClickListener = musicaOnClickListener;
     }
 
@@ -39,18 +39,19 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
     @Override
     public MusicaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.list_musicas, parent, false);
+        View view = inflater.inflate(R.layout.musicas_listitem, parent, false);
         MusicaViewHolder musicaHolder = new MusicaViewHolder(view);
         return musicaHolder;
     }
 
     @Override
     public void onBindViewHolder(MusicaViewHolder holder, int position) {
-        String musica = musicas.get(position);
+        Musica musica = musicas.get(position);
 
-        holder.textView.setText(musica);
+        holder.tituloMusica.setText(musica.getTitulo());
+        holder.artistaMusica.setText(musica.getArtista().getNome());
 
-        holder.itemView.setOnClickListener(getOnClickListener(holder, position));
+        holder.cardView.setOnClickListener(getOnClickListener(holder, position));
     }
 
     public View.OnClickListener getOnClickListener(final MusicaViewHolder musicaViewHolder, final int position) {
@@ -74,32 +75,18 @@ public class MusicaAdapter extends RecyclerView.Adapter<MusicaAdapter.MusicaView
     }
 
     class MusicaViewHolder extends RecyclerView.ViewHolder {
+        TextView tituloMusica;
+        TextView artistaMusica;
         CardView cardView;
-        TextView textView;
 
         public MusicaViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.music_name);
-            cardView = (CardView) itemView.findViewById(R.id.card_viewMusic);
+            tituloMusica = (TextView) itemView.findViewById(R.id.titulo_musica);
+            cardView = (CardView) itemView.findViewById(R.id.card_view_musica);
+            artistaMusica = (TextView) itemView.findViewById(R.id.artista_musica);
         }
     }
 
-
-    private List<String> createListOfMusic(){
-        List<String> list = new ArrayList<>();
-        list.add("Gangsta");
-        list.add("Bohemian Rhapsody");
-        list.add("Fortunate Son");
-        list.add("Heathens");
-        list.add("I Started a Joke");
-        list.add("Know Better");
-        list.add("Medieval Warfare");
-        list.add("Purple Lamborghini");
-        list.add("Slippin' Into Darkness");
-        list.add("Without Me");
-
-        return list;
-    }
 
 
 
