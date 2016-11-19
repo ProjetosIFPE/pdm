@@ -121,6 +121,9 @@ public class BaseActivity extends AppCompatActivity  {
                     return Boolean.TRUE;
                 }
                 break;
+            default:
+                Intent intent = new Intent(getContext(), SpotifyPlayerActivity.class);
+                startActivity(intent);
         }
         return  super.onOptionsItemSelected(item);
     }

@@ -7,8 +7,13 @@ import android.util.Log;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.spotify.sdk.android.player.*;
+import com.spotify.sdk.android.player.Config;
+import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Error;
+import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.PlayerEvent;
+import com.spotify.sdk.android.player.Spotify;
+import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 
@@ -26,14 +31,14 @@ public class SpotifyPlayerActivity extends BaseActivity implements ConnectionSta
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_spotify_player);
         setUpToolbar();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN,
                 REDIRECT_URI);
 
-        builder.setScopes(new String[]{"user-read-private","streaming"});
+        builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
@@ -44,11 +49,11 @@ public class SpotifyPlayerActivity extends BaseActivity implements ConnectionSta
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if (requestCode == REQUEST_CODE ) {
+        if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
-                mPlayer = Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
                     public void onInitialized(SpotifyPlayer spotifyPlayer) {
                         mPlayer = spotifyPlayer;
@@ -59,7 +64,7 @@ public class SpotifyPlayerActivity extends BaseActivity implements ConnectionSta
 
                     @Override
                     public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
+                        Log.d(TAG, throwable.getMessage(), throwable);
                     }
                 });
             }
@@ -69,11 +74,12 @@ public class SpotifyPlayerActivity extends BaseActivity implements ConnectionSta
     @Override
     public void onLoggedIn() {
         Log.d(TAG, "User logged in");
+        mPlayer.playUri("spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
     }
 
     @Override
     public void onLoggedOut() {
-        Log.d(TAG,  "User logged out");
+        Log.d(TAG, "User logged out");
     }
 
     @Override
