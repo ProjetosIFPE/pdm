@@ -55,8 +55,8 @@
         <service android:name=".service.PlayerService" />
 
         <activity
-            android:launchMode="singleTop"
             android:name=".activity.MediaPlayerActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -65,6 +65,7 @@
         <activity
             android:name=".activity.CategoriaActivity"
             android:launchMode="singleTop" />
+        <activity android:name=".activity.FavoritosActivity"></activity>
     </application>
 
 </manifest>

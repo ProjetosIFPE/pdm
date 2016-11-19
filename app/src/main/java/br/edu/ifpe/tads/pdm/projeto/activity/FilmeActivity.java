@@ -1,7 +1,11 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -9,6 +13,7 @@ import org.parceler.apache.commons.lang.StringUtils;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmeFragment;
 import br.edu.ifpe.tads.pdm.projeto.fragment.MusicasFragment;
 
@@ -22,8 +27,9 @@ public class FilmeActivity extends BaseActivity {
         setContentView(R.layout.activity_filme);
         setUpToolbar();
         setUpNavDrawer();
+        final FilmeDB filmeDB = new FilmeDB(this);
 
-        Filme filme = (Filme) getIntent().getSerializableExtra(FilmeActivity.FILME);
+        final Filme filme = (Filme) getIntent().getSerializableExtra(FilmeActivity.FILME);
         getSupportActionBar().setTitle(filme.getTitulo());
 
         ImageView appBarImg = (ImageView) findViewById(R.id.appBarImg);
@@ -39,6 +45,16 @@ public class FilmeActivity extends BaseActivity {
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_filme, filmeFragment).commit();
+
+
+            final FloatingActionButton fAbutton = (FloatingActionButton) findViewById(R.id.fab);
+            fAbutton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //filmeDB.save(filme);
+                    Toast.makeText(FilmeActivity.this, "'" + filme.getTitulo() + "' foi salvo.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
 
         }

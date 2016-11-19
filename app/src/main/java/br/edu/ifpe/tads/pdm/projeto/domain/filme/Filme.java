@@ -47,6 +47,12 @@ public class Filme implements Serializable {
 
     public final static String ROOT_JSON_OBJECT = "results";
 
+    public Filme(){}
+    public Filme(String titulo, String tituloOriginal){
+        this.titulo = titulo;
+        this.tituloOriginal = tituloOriginal;
+    }
+
     public String getTitulo() {
         return titulo;
     }
