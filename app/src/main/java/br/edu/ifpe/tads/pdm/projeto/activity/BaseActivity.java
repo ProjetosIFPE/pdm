@@ -4,7 +4,11 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,32 +25,30 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 /**
  * Created by Edmilson Santana on 26/09/2016.
  */
-public class BaseActivity extends AppCompatActivity  {
-
-    protected final String TAG = getClass().getSimpleName();
-
-    private final int MENU_GROUP_ID = 1;
-
-    protected DrawerLayout drawerLayout;
-
-    protected NavigationView navigationView;
+public class BaseActivity extends AppCompatActivity {
 
     protected static int navIndexItem = 0;
+    protected final String TAG = getClass().getSimpleName();
+    private final int MENU_GROUP_ID = 1;
+    protected DrawerLayout drawerLayout;
+    protected NavigationView navigationView;
 
     /**
      * Aplica a Toolbar como Action Bar
      * *
-     * */
-    protected void setUpToolbar(){
+     */
+    protected Toolbar setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null ) {
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("");
         }
+        return toolbar;
     }
 
 
     /**
-     *  Configura o menu lateral
+     * Configura o menu lateral
      */
     protected void setUpNavDrawer() {
         final ActionBar actionBar = getSupportActionBar();
@@ -71,9 +73,27 @@ public class BaseActivity extends AppCompatActivity  {
         }
     }
 
+    /**
+     * Configura as abas da tela
+     */
+    protected void setUpViewPagerTabs(FragmentPagerAdapter fragmentPagerAdapter) {
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+
+        viewPager.setOffscreenPageLimit(fragmentPagerAdapter.getCount());
+        viewPager.setAdapter(fragmentPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        int cor = ContextCompat.getColor(getContext(), R.color.white);
+
+        tabLayout.setTabTextColors(cor, cor);
+    }
+
 
     /**
      * Eventos de click no menu de navegação lateral
+     *
      * @param
      */
     public void onNavDrawerItemSelected(MenuItem menuItem) {
@@ -91,17 +111,11 @@ public class BaseActivity extends AppCompatActivity  {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.createSearchWidget(menu);
-        return Boolean.TRUE;
-    }
-
     /**
      * Configura o SearchView do menu da Toolbar com as configurações de pesquisa
+     *
      * @param menu
-     * **/
+     **/
     public void createSearchWidget(Menu menu) {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
@@ -114,7 +128,7 @@ public class BaseActivity extends AppCompatActivity  {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch( item.getItemId() ) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 if (drawerLayout != null) {
                     openDrawner();
@@ -122,10 +136,8 @@ public class BaseActivity extends AppCompatActivity  {
                 }
                 break;
         }
-        return  super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
-
-
 
 
     /**
@@ -151,25 +163,22 @@ public class BaseActivity extends AppCompatActivity  {
     }
 
 
-
     /**
-     *  Inicia uma tarefa assíncrona
-     *  @param listener
+     * Inicia uma tarefa assíncrona
      *
+     * @param listener
      */
-    protected <T> void startTask( TaskListener<T> listener) {
+    protected <T> void startTask(TaskListener<T> listener) {
         Task<T> task = new Task<>(listener);
         task.execute();
     }
 
     /**
-     *  Retorna o contexto da Activity
-     *
-     * **/
+     * Retorna o contexto da Activity
+     **/
     protected Context getContext() {
         return this;
     }
-
 
 
 }

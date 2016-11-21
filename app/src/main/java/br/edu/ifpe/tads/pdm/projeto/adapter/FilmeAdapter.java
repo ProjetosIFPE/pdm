@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -52,6 +53,7 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
         Filme filme = filmes.get(position);
 
         holder.progressBar.setVisibility(View.VISIBLE);
+
         if (StringUtils.isNotEmpty(filme.getUrlPoster())) {
             Picasso.with(context).load(filme.getUrlPoster()).fit().into(holder.img,
                     this.getImageLoadCallback(holder));
@@ -108,6 +110,7 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
         ImageView img;
         ProgressBar progressBar;
         CardView cardView;
+        TextView tituloFilme;
 
         public FilmeViewHolder(View itemView) {
             super(itemView);

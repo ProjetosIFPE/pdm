@@ -65,7 +65,6 @@
         <activity
             android:name=".activity.CategoriaActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".activity.FavoritosActivity"></activity>
     </application>
 
 </manifest>

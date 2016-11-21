@@ -20,8 +20,10 @@ public class FilmeService extends BaseService {
     private static final String URL_PESQUISA_FILME_POR_POPULARIDADE = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}";
     private static final String URL_PESQUISA_FILME_POR_LANCAMENTO = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}&primary_release_date.lte={release-date}";
 
+
     /**
      * Realiza a consulta dos géneros que estão disponíveis no TMDB
+     *
      * @param context
      * @return
      */
@@ -35,6 +37,7 @@ public class FilmeService extends BaseService {
 
     /**
      * Obtém a categoria por descrição
+     *
      * @param context
      * @return
      */
@@ -47,6 +50,7 @@ public class FilmeService extends BaseService {
 
     /**
      * Obtém os filmes que foram adicionados recentemente
+     *
      * @param context
      * @return
      */
@@ -63,6 +67,7 @@ public class FilmeService extends BaseService {
 
     /**
      * Obtém os filmes por popularidade
+     *
      * @param context
      * @return
      */
@@ -78,6 +83,7 @@ public class FilmeService extends BaseService {
 
     /**
      * Obtém os filmes que foram adicionados recentemente
+     *
      * @param context
      * @return
      */
@@ -93,11 +99,12 @@ public class FilmeService extends BaseService {
 
     /**
      * Realiza a consulta de filmes no TMDB, por categoria
+     *
      * @param context
      * @param categoria
      * @return
      */
-    public List<Filme> getFilmes(Context context, Categoria categoria)  {
+    public List<Filme> getFilmes(Context context, Categoria categoria) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_CATEGORIA
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
@@ -111,11 +118,12 @@ public class FilmeService extends BaseService {
 
     /**
      * Realiza a consulta de filmes no TMDB, por título
+     *
      * @param context
      * @param titulo
      * @return
      */
-    public  List<Filme> getFilmes(Context context, String titulo){
+    public List<Filme> getFilmes(Context context, String titulo) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_TITULO
                 .replace("{key}", API_KEY)
@@ -123,8 +131,6 @@ public class FilmeService extends BaseService {
                 .replace("{language}", TMDBParameters.LANGUAGE_PT_BR);
         return super.parseJson(Filme[].class, get(url), Filme.ROOT_JSON_OBJECT);
     }
-
-
 
 
     public class TMDBParameters {

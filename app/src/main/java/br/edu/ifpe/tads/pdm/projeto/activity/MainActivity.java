@@ -1,19 +1,13 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.adapter.TabsAdapter;
-import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
+import br.edu.ifpe.tads.pdm.projeto.adapter.FilmesPagerAdapter;
 
 
 /**
@@ -27,29 +21,23 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         setUpToolbar();
         setUpNavDrawer();
-        setUpViewPagerTabs();
+
+        FilmesPagerAdapter filmesPagerAdapter = new FilmesPagerAdapter(getContext(),
+                getSupportFragmentManager());
+        super.setUpViewPagerTabs(filmesPagerAdapter);
+
 
         getSupportActionBar().setTitle(R.string.inicio);
     }
 
-
-
-    /**
-     * Configura as abas da tela
-     */
-    private void setUpViewPagerTabs() {
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.setAdapter(new TabsAdapter(getContext(), getSupportFragmentManager()));
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setupWithViewPager(viewPager);
-
-        int cor = ContextCompat.getColor(getContext(), R.color.white);
-
-        tabLayout.setTabTextColors(cor, cor);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        super.createSearchWidget(menu);
+        return Boolean.TRUE;
     }
+
+
 
 
 

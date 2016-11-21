@@ -2,6 +2,7 @@ package br.edu.ifpe.tads.pdm.projeto.fragment;
 
 import android.support.v4.app.Fragment;
 import android.view.Menu;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,5 +29,10 @@ public class BaseFragment extends Fragment {
         Task<T> task = new Task<>(listener);
         task.execute();
     }
+
+    protected void toast(String s) {
+        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
 
 }

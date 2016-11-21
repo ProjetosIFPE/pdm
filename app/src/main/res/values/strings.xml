@@ -14,6 +14,9 @@
     <string name="categoria_favoritos">FAVORITOS</string>
     <string name="categoria_lancamentos">LANÇAMENTOS</string>
 
+    <string name="sobre_filme">SOBRE</string>
+    <string name="musicas_filme">MÚSICAS</string>
+
     <string name="inicio">Início</string>
     <string name="acao">Ação</string>
     <string name="comedia">Comédia</string>
@@ -28,5 +31,6 @@
     <string name="nav_item_sobre">Sobre</string>
     <string name="descricao">Descrição</string>
     <string name="generos">Géneros</string>
+    <string name="favorito">Favorito</string>
 
 </resources>

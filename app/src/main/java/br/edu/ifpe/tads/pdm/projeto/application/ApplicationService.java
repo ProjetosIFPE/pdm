@@ -2,6 +2,9 @@ package br.edu.ifpe.tads.pdm.projeto.application;
 
 import android.app.Application;
 
+import com.squareup.otto.Bus;
+
+import br.edu.ifpe.tads.pdm.projeto.domain.BaseDB;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.MusicaService;
 
@@ -14,6 +17,10 @@ public class ApplicationService extends Application {
     private  final String TAG = getClass().getSimpleName();
 
     private static ApplicationService instance = null;
+
+    private Bus bus = new Bus();
+
+    private BaseDB baseDB = null;
 
     private FilmeService filmeService;
 
@@ -31,11 +38,19 @@ public class ApplicationService extends Application {
         return musicaService;
     }
 
+    public Bus getBus() {
+        return bus;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+
         instance = this;
+
         filmeService = new FilmeService();
         musicaService = new MusicaService();
     }
+
+
 }

@@ -13,11 +13,11 @@ import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
  * Created by Edmilson on 22/10/2016.
  */
 
-public class TabsAdapter extends FragmentPagerAdapter {
+public class FilmesPagerAdapter extends FragmentPagerAdapter {
 
     private Context context;
 
-    public TabsAdapter(Context context, FragmentManager fm) {
+    public FilmesPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         this.context = context;
     }
@@ -42,6 +42,9 @@ public class TabsAdapter extends FragmentPagerAdapter {
                 break;
             case 1:
                 arguments.putBoolean(FilmesFragment.FILMES_POR_DATA_LANCAMENTO, Boolean.TRUE);
+                break;
+            case 2:
+                arguments.putBoolean(FilmesFragment.FILMES_FAVORITOS, Boolean.TRUE);
                 break;
         }
         return FilmesFragment.newInstance(arguments);

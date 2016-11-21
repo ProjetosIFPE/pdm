@@ -1,62 +1,73 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import org.parceler.apache.commons.lang.StringUtils;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.adapter.FilmePagerAdapter;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
-import br.edu.ifpe.tads.pdm.projeto.fragment.FilmeFragment;
-import br.edu.ifpe.tads.pdm.projeto.fragment.MusicasFragment;
+import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
 
 public class FilmeActivity extends BaseActivity {
 
-    public static final String FILME = "filme";
+    private Filme filmeService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filme);
-        setUpToolbar();
-        setUpNavDrawer();
-        final FilmeDB filmeDB = new FilmeDB(this);
 
-        final Filme filme = (Filme) getIntent().getSerializableExtra(FilmeActivity.FILME);
-        getSupportActionBar().setTitle(filme.getTitulo());
+        Toolbar toolbar = setUpToolbar();
+        toolbar.setNavigationOnClickListener(onToolbarNavigationClick());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(Boolean.TRUE);
 
-        ImageView appBarImg = (ImageView) findViewById(R.id.appBarImg);
+
+        final Filme filme = (Filme) getIntent().getSerializableExtra(Constantes.FILME);
+
+        carregarDetalhesFilme(filme);
+
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(Constantes.FILME, filme);
+        FilmePagerAdapter filmePagerAdapter = new FilmePagerAdapter(getContext(),
+                getSupportFragmentManager(), arguments);
+
+        setUpViewPagerTabs(filmePagerAdapter);
+    }
+
+    public void carregarDetalhesFilme(Filme filme) {
+
+        ImageView filmePlanoFundo = (ImageView) findViewById(R.id.filme_plano_fundo);
+        ImageView filmePoster = (ImageView) findViewById(R.id.filme_poster);
+        TextView filmeTitulo = (TextView) findViewById(R.id.filme_titulo);
+        TextView filmeTituloOriginal = (TextView) findViewById(R.id.filme_titulo_original);
+
+        filmeTitulo.setText(filme.getTitulo());
+        filmeTituloOriginal.setText(filme.getTituloOriginal());
+
         if (StringUtils.isNotEmpty(filme.getUrlPlanoFundo())) {
-            Picasso.with(getContext()).load(filme.getUrlPlanoFundo()).fit().into(appBarImg);
+            Picasso.with(getContext()).load(filme.getUrlPlanoFundo()).fit().into(filmePlanoFundo);
         }
 
-        if (savedInstanceState == null) {
-
-            Bundle filmeFragmentArgs = new Bundle();
-            filmeFragmentArgs.putSerializable(FilmeActivity.FILME, filme);
-            FilmeFragment filmeFragment = FilmeFragment.newInstance(filmeFragmentArgs);
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_filme, filmeFragment).commit();
-
-
-            final FloatingActionButton fAbutton = (FloatingActionButton) findViewById(R.id.fab);
-            fAbutton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    //filmeDB.save(filme);
-                    Toast.makeText(FilmeActivity.this, "'" + filme.getTitulo() + "' foi salvo.", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-
+        if (StringUtils.isNotEmpty(filme.getUrlPoster())) {
+            Picasso.with(getContext()).load(filme.getUrlPoster()).fit().into(filmePoster);
         }
     }
+
+
+    public View.OnClickListener onToolbarNavigationClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        };
+    }
+
 }

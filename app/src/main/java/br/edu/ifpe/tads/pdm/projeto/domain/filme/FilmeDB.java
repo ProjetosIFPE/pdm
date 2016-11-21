@@ -4,78 +4,102 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.edu.ifpe.tads.pdm.projeto.domain.BaseDB;
 
 /**
  * Created by Douglas Albuquerque on 15/11/2016.
  */
 
-public class FilmeDB extends SQLiteOpenHelper{
-    public static final String TAG = "sql";
-
-    public static final String  NOME_BANCO = "tb_filmes_favoritos";
-    private static final int VERSAO_BANCO = 1;
+public class FilmeDB extends BaseDB {
+    public static final String TAG = FilmeDB.class.getSimpleName();
 
     public FilmeDB(Context context) {
-        super(context, NOME_BANCO, null, VERSAO_BANCO);
+        super(context);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "Criando a tabela favoritos...");
-        String sql = "CREATE  TABLE IF NOT EXISTS filmes_favoritos(id INTEGER PRIMARY KEY autoincrement, " +
-                "title TEXT NOT NULL, original_title TEXT NOT NULL);";
-        db.execSQL(sql);
-        Log.d(TAG, "Tabela favoritos criada com sucesso...");
-    }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-    }
-
-    public long save(Filme filme){
-        long id = filme.getId();
-        SQLiteDatabase db = getWritableDatabase();
-        try{
-            ContentValues data = new ContentValues();
-            data.put("title", filme.getTitulo());
-            data.put("original_title", filme.getTituloOriginal());
-            if(id != 0){
-                  // remove o filme da lista de favoritos
-                  int count = db.delete("filmes_favoritos", "_title=?", new String[]{String.valueOf(filme.getTitulo())});
-                    return count;
-            }else{
-                 //adiciona um registro na tabela
-                id = db.insert("filmes_favoritos",null, data);
-                return id;
-            }
-        }finally {
+    public long salvar(Filme filme) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(BaseDB.ApplicationDBContract.Filme._ID, filme.getId());
+            values.put(BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO, filme.getTitulo());
+            values.put(BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL, filme.getTituloOriginal());
+            long newId = db.insert(BaseDB.ApplicationDBContract.Filme.TABLE_NAME, null, values);
+            return newId;
+        } finally {
             db.close();
         }
-}
+    }
 
-    public List<Filme> listarTodos(){
-        List<Filme> listFilmesFavoritos = new ArrayList<>();
-        SQLiteDatabase db = getWritableDatabase();
-        try{
-            Cursor cursor = db.rawQuery("SELECT * FROM filmes_favoritos;",null);
-            while(cursor.moveToNext()){
-                int id = cursor.getInt(cursor.getColumnIndex("id"));
-                String title = cursor.getString(cursor.getColumnIndex("title"));
-                String originalTitle = cursor.getString(cursor.getColumnIndex("original_title"));
-                Filme filme = new Filme(title,originalTitle);
-                listFilmesFavoritos.add(filme);
-
-            }
-            return listFilmesFavoritos;
-        }finally {
+    public long remover(Filme filme) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String selectionClause = BaseDB.ApplicationDBContract
+                    .Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL + " LIKE ?";
+            String[] selectionArgs = {filme.getTituloOriginal()};
+            long count = db.delete(BaseDB.ApplicationDBContract.Filme.TABLE_NAME,
+                    selectionClause, selectionArgs);
+            return count;
+        } finally {
             db.close();
         }
 
     }
+
+    public boolean existe(Filme filme) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String selectionClause = BaseDB.ApplicationDBContract
+                    .Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL + " LIKE ?";
+            String[] selectionArgs = {filme.getTituloOriginal()};
+            Cursor cursor = db.query(BaseDB.ApplicationDBContract.Filme.TABLE_NAME, null,
+                    selectionClause, selectionArgs, null, null, null, null);
+            return cursor.getCount() > 0;
+        } finally {
+            db.close();
+        }
+    }
+
+    public List<Filme> findAll() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String[] colunas = {BaseDB.ApplicationDBContract.Filme._ID,
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO,
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL};
+
+            Cursor cursor = db.query(BaseDB.ApplicationDBContract.Filme.TABLE_NAME,
+                    colunas, null, null, null, null, null);
+            return toList(cursor);
+        } finally {
+            db.close();
+        }
+    }
+
+    public List<Filme> toList(Cursor cursor) {
+        List<Filme> filmes = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            Filme filme = new Filme();
+            filme.setId(Long.valueOf(cursor.getInt(cursor.getColumnIndex(
+                    BaseDB.ApplicationDBContract.Filme._ID))));
+            filme.setTitulo(cursor.getString(cursor.getColumnIndex(
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO)));
+            filme.setTituloOriginal(cursor.getString(cursor.getColumnIndex(
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL)));
+            filmes.add(filme);
+        }
+        return filmes;
+    }
+
+    public List<Filme> getFavoritos() {
+        return this.findAll();
+    }
+
+
 }
