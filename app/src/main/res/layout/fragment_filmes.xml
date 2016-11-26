@@ -2,23 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@id/fragment_filmes"
     tools:context="br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical" />
+        android:visibility="invisible"
+        android:scrollbars="vertical"/>
 
     <ProgressBar
         android:id="@+id/progressRecyclerView"
-        style="@android:style/Widget.ProgressBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="6dp"
+        android:visibility="invisible"
         android:layout_gravity="center|center_vertical"
-        android:gravity="center|center_vertical"
-        android:visibility="invisible" />
+        android:gravity="center|center_vertical" />
 </FrameLayout>

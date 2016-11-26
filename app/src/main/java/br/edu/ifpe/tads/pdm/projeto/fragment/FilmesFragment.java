@@ -3,6 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,9 +26,10 @@ import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
 import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
+import br.edu.ifpe.tads.pdm.projeto.util.NetworkUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
-public class FilmesFragment extends BaseFragment {
+public class FilmesFragment extends BaseFragment implements AlertConnectivityFragment.AlertConnectivityListener {
 
     public static final String FILMES_POR_TITULO = "FILMES_POR_TITULO";
 
@@ -85,19 +87,32 @@ public class FilmesFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filmes, container, Boolean.FALSE);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        progressRecyclerView = (ProgressBar) view.findViewById(R.id.progressRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(Boolean.TRUE);
+
+        configurarListaFilmes(view);
+
+        if (NetworkUtil.isConnected(getContext())) {
+            esconderListaFilmes();
+            consultarFilmes();
+        } else {
+            adicionarAlertaConexaoIndisponivel();
+        }
 
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        consultarFilmes();
+
+    /**
+     * Realiza as configurações de layout do Recycler View e
+     * do progress bar
+     *
+     * @param fragmentView
+     */
+    private void configurarListaFilmes(View fragmentView) {
+        recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerView);
+        progressRecyclerView = (ProgressBar) fragmentView.findViewById(R.id.progressRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setHasFixedSize(Boolean.TRUE);
     }
 
     public void consultarFilmes() {
@@ -112,6 +127,16 @@ public class FilmesFragment extends BaseFragment {
         } else if (favoritos) {
             consultarFilmesFavoritos();
         }
+    }
+
+    /**
+     * Adiciona o fragmento com um alerta de conexão indisponível
+     */
+    public void adicionarAlertaConexaoIndisponivel() {
+        AlertConnectivityFragment alertConnectivityFragment = AlertConnectivityFragment.newInstance(this);
+        getChildFragmentManager().beginTransaction()
+                .add(R.id.fragment_filmes, alertConnectivityFragment,
+                        AlertConnectivityFragment.ALERT_CONNECTIVITY_FRAGMENT).commit();
     }
 
     /**
@@ -132,8 +157,8 @@ public class FilmesFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Filme> response) {
-                atualizarRecyclerView(response);
+            public void updateView(List<Filme> filmes) {
+                atualizarRecyclerView(filmes);
             }
 
         };
@@ -157,8 +182,8 @@ public class FilmesFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Filme> response) {
-                atualizarRecyclerView(response);
+            public void updateView(List<Filme> filmes) {
+                atualizarRecyclerView(filmes);
             }
 
         };
@@ -183,8 +208,8 @@ public class FilmesFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Filme> response) {
-                atualizarRecyclerView(response);
+            public void updateView(List<Filme> filmes) {
+                atualizarRecyclerView(filmes);
             }
 
         };
@@ -209,8 +234,8 @@ public class FilmesFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Filme> response) {
-                atualizarRecyclerView(response);
+            public void updateView(List<Filme> filmes) {
+                atualizarRecyclerView(filmes);
             }
 
         };
@@ -235,8 +260,8 @@ public class FilmesFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Filme> response) {
-                atualizarRecyclerView(response);
+            public void updateView(List<Filme> filmes) {
+                atualizarRecyclerView(filmes);
             }
 
         };
@@ -246,16 +271,66 @@ public class FilmesFragment extends BaseFragment {
      * Cria o adapter da recycler view, se está não possuir um, ou
      * atualiza o conteúdo do adapter existente
      *
-     * @param list
+     * @param filmes
      */
-    private void atualizarRecyclerView(List<Filme> list) {
-        if (recyclerView.getAdapter() == null) {
-            recyclerView.setAdapter(new FilmeAdapter(getContext(), list, onClickFilme()));
-            filmes = list;
+    private void atualizarRecyclerView(List<Filme> filmes) {
+        mostrarListaFilmes();
+
+        if (recyclerView != null && recyclerView.getAdapter() == null) {
+            inicializarDadosRecyclerView(filmes);
         } else {
+            atualizarDadosRecyclerView(filmes);
+        }
+    }
+
+    /**
+     * Atualiza a lista de filmes do Recycler View
+     *
+     * @param novosFilmes
+     */
+    private void atualizarDadosRecyclerView(List<Filme> novosFilmes) {
+        if (this.filmes != null && recyclerView != null) {
             filmes.clear();
-            filmes.addAll(list);
-            recyclerView.getAdapter().notifyDataSetChanged();
+            filmes.addAll(novosFilmes);
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    /**
+     * Criar adapter e inicializar lista de filmes no Recycler View
+     *
+     * @param novosFilmes
+     */
+    private void inicializarDadosRecyclerView(List<Filme> novosFilmes) {
+        if (recyclerView != null && recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(new FilmeAdapter(getContext(), novosFilmes, onClickFilme()));
+            this.filmes = novosFilmes;
+        }
+    }
+
+    /**
+     * Altera as propriedades de visibilidade
+     * para visível do Recycler View e esconde o Progress bar
+     */
+    private void mostrarListaFilmes() {
+        if (recyclerView != null && progressRecyclerView != null) {
+            progressRecyclerView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Altera as propriedades de visibilidade
+     * para invísivel, do Recycler View, e mostra
+     * o Progress bar
+     */
+    private void esconderListaFilmes() {
+        if (recyclerView != null && progressRecyclerView != null) {
+            recyclerView.setVisibility(View.GONE);
+            progressRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -287,5 +362,24 @@ public class FilmesFragment extends BaseFragment {
         consultarFilmes();
     }
 
+
+    @Override
+    public void onConnectivityChange() {
+        if (NetworkUtil.isConnected(getContext())) {
+            removerAlertaConexaoIndisponivel();
+            consultarFilmes();
+        }
+    }
+
+    /**
+     * Remover fragmento de alerta de conexão indisponível
+     */
+    public void removerAlertaConexaoIndisponivel() {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(
+                AlertConnectivityFragment.ALERT_CONNECTIVITY_FRAGMENT);
+        getChildFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .remove(fragment).commit();
+    }
 
 }

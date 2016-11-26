@@ -32,5 +32,7 @@
     <string name="descricao">Descrição</string>
     <string name="generos">Géneros</string>
     <string name="favorito">Favorito</string>
+    <string name="tentar_novamente">Tentar novamente</string>
+    <string name="sem_conexao">Sem conexão</string>
 
 </resources>
