@@ -11,4 +11,14 @@
         android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbars="vertical" />
+
+    <ProgressBar
+        android:id="@+id/progressRecyclerViewMusic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:visibility="invisible"
+        android:layout_gravity="center|center_vertical"
+        android:gravity="center|center_vertical" />
+
 </FrameLayout>
