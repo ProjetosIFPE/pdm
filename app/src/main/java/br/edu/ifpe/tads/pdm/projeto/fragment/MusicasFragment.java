@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.List;
 
@@ -29,34 +30,37 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 public class MusicasFragment extends BaseFragment {
 
+    public static final String SERVICE_BOUND = "SERVICE_BOUND";
     public static final String MUSICAS = "MUSICAS";
     public static final String FILME = "FILME";
-    public static final String SERVICE_BOUND = "SERVICE_BOUND";
     protected RecyclerView recyclerView;
+    protected ProgressBar progressBarMusicas;
     boolean serviceBound = Boolean.FALSE;
+    private MediaPlayerService mediaPlayerService;
     private List<Musica> musicas;
     private MusicaService musicaService;
-    private MediaPlayerService mediaPlayerService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             mediaPlayerService = binder.getService();
-            serviceBound = true;
+            serviceBound = Boolean.TRUE;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
+            serviceBound = Boolean.FALSE;
         }
     };
+
 
     public static MusicasFragment newInstance(Bundle bundle) {
         MusicasFragment musicasFragment = new MusicasFragment();
         musicasFragment.setArguments(bundle);
         return musicasFragment;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,9 +78,13 @@ public class MusicasFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_musicas, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewMusicas);
+        progressBarMusicas = (ProgressBar) view.findViewById(R.id.progressRecyclerViewMusic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(Boolean.TRUE);
+
+        esconderListaMusicas();
+
         return view;
     }
 
@@ -104,8 +112,12 @@ public class MusicasFragment extends BaseFragment {
 
             @Override
             public void updateView(List<Musica> response) {
+                mostrarListaMusicas();
                 musicas = response;
-                recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
+                if (musicas == null || musicas.isEmpty()) {
+                    toast("Playlist não disponivel");
+                } else
+                    recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
 
             }
         };
@@ -120,6 +132,19 @@ public class MusicasFragment extends BaseFragment {
         };
     }
 
+    private void esconderListaMusicas() {
+        if (recyclerView != null && progressBarMusicas != null) {
+            recyclerView.setVisibility(View.GONE);
+            progressBarMusicas.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void mostrarListaMusicas() {
+        if (recyclerView != null && progressBarMusicas != null) {
+            progressBarMusicas.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -151,5 +176,6 @@ public class MusicasFragment extends BaseFragment {
             getActivity().sendBroadcast(broadcastIntent);
         }
     }
-
 }
+
+
