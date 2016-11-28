@@ -1,6 +1,5 @@
 package br.edu.ifpe.tads.pdm.projeto.domain.musica;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -11,6 +10,7 @@ import java.io.Serializable;
 
 public class Musica implements Serializable {
 
+    public final static String ROOT_JSON_OBJECT = "songs";
     @SerializedName("id")
     private Long id;
     @SerializedName("name")
@@ -21,8 +21,6 @@ public class Musica implements Serializable {
     private String urlMusica;
     @SerializedName("scene")
     private String descricaoCena;
-
-    public final static String ROOT_JSON_OBJECT = "songs";
 
     public Long getId() {
         return id;
@@ -46,6 +44,10 @@ public class Musica implements Serializable {
 
     public void setArtista(Artista artista) {
         this.artista = artista;
+    }
+
+    public String getNomesArtistas() {
+        return getArtista() != null ? getArtista().getNome() : "";
     }
 
     public String getUrlMusica() {

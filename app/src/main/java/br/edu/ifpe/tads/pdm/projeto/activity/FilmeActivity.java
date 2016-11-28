@@ -28,7 +28,6 @@ public class FilmeActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(onToolbarNavigationClick());
         getSupportActionBar().setDisplayHomeAsUpEnabled(Boolean.TRUE);
 
-
         final Filme filme = (Filme) getIntent().getSerializableExtra(Constantes.FILME);
 
         carregarDetalhesFilme(filme);

@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
@@ -27,11 +29,10 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
  */
 public class BaseActivity extends AppCompatActivity {
 
-    protected static int navIndexItem = 0;
     protected final String TAG = getClass().getSimpleName();
-    private final int MENU_GROUP_ID = 1;
     protected DrawerLayout drawerLayout;
     protected NavigationView navigationView;
+    protected SlidingUpPanelLayout slidingUpPanelLayout;
 
     /**
      * Aplica a Toolbar como Action Bar
@@ -90,7 +91,6 @@ public class BaseActivity extends AppCompatActivity {
         tabLayout.setTabTextColors(cor, cor);
     }
 
-
     /**
      * Eventos de click no menu de navegação lateral
      *
@@ -110,7 +110,6 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     /**
      * Configura o SearchView do menu da Toolbar com as configurações de pesquisa
      *
@@ -123,7 +122,6 @@ public class BaseActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -138,7 +136,6 @@ public class BaseActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     /**
      * Abrir menu de navegação lateral
@@ -161,7 +158,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void toast(String s) {
         Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
     }
-
 
     /**
      * Inicia uma tarefa assíncrona

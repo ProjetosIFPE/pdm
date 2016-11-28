@@ -36,4 +36,10 @@ public class NotificationUtil {
         return builder.build();
     }
 
+    public static void removeNotification(Context context, int notificationId) {
+        NotificationManager  notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(notificationId);
+    }
+
 }
