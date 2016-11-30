@@ -151,11 +151,14 @@ public class FilmeFragment extends BaseFragment {
     }
 
     public void setFabColor(Boolean favorito) {
-        if (favorito) {
-            fab.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.yellow));
-        } else {
-            fab.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.accent));
+        if (favorito != null) {
+            if (favorito) {
+                fab.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.yellow));
+            } else {
+                fab.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.accent));
+            }
         }
+
     }
 
     /**
