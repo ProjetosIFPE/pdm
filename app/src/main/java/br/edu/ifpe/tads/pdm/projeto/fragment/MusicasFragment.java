@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +32,6 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 public class MusicasFragment extends BaseFragment {
 
     public static final String SERVICE_BOUND = "SERVICE_BOUND";
-    public static final String MUSICAS = "MUSICAS";
     public static final String FILME = "FILME";
     protected RecyclerView recyclerView;
     protected ProgressBar progressBarMusicas;
@@ -111,16 +111,50 @@ public class MusicasFragment extends BaseFragment {
             }
 
             @Override
-            public void updateView(List<Musica> response) {
+            public void updateView(List<Musica> musicas) {
                 mostrarListaMusicas();
-                musicas = response;
-                if (musicas == null || musicas.isEmpty()) {
-                    toast("Playlist não disponivel");
-                } else
-                    recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
-
+                verificarResultadoConsultarMusicas(musicas);
             }
         };
+    }
+
+    private void verificarResultadoConsultarMusicas(List<Musica> musicas) {
+        if (musicas != null && !musicas.isEmpty()) {
+            removerAlertaNenhumResultado();
+            atualizarRecyclerView(musicas);
+        } else {
+            adicionarAlertaNenhumResultadoDisponível();
+        }
+    }
+
+    /**
+     * Remover fragmento de alerta de nenhum resultado disponível
+     */
+    public void removerAlertaNenhumResultado() {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(
+                AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
+        if (fragment != null) {
+            getChildFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .remove(fragment).commit();
+        }
+    }
+
+    private void atualizarRecyclerView(List<Musica> musicas) {
+        this.musicas = musicas;
+        recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
+    }
+
+
+    /**
+     * Adiciona o fragmento com um alerta de nenhum resultado disponível
+     */
+    public void adicionarAlertaNenhumResultadoDisponível() {
+        Bundle arguments = new Bundle();
+        AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
+        getChildFragmentManager().beginTransaction()
+                .add(R.id.fragment_musicas, alertNoResultsFragment,
+                        AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
     }
 
     public MusicaAdapter.MusicaOnClickListener onClickMusica() {

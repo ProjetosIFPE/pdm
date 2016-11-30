@@ -3,6 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,18 +55,23 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
 
         holder.progressBar.setVisibility(View.VISIBLE);
 
-        if (StringUtils.isNotEmpty(filme.getUrlPoster())) {
+        if (!TextUtils.isEmpty(filme.getUrlPoster())) {
             Picasso.with(context).load(filme.getUrlPoster()).fit().into(holder.img,
                     this.getImageLoadCallback(holder));
+        } else {
+            Picasso.with(context).cancelRequest(holder.img);
+            Picasso.with(context).load(R.drawable.placeholder).fit().into(holder.img);
+            holder.progressBar.setVisibility(View.GONE);
         }
         holder.itemView.setOnClickListener(getOnClickListener(holder, position));
     }
 
     /**
-     *  Gerencia dos eventos  de sucesso ou falha ao realizar o carregamento de uma imagem
-     *  do poster de um filme da lista
-     *  @param filmeViewHolder
-     * **/
+     * Gerencia dos eventos  de sucesso ou falha ao realizar o carregamento de uma imagem
+     * do poster de um filme da lista
+     *
+     * @param filmeViewHolder
+     **/
     public Callback getImageLoadCallback(final FilmeViewHolder filmeViewHolder) {
         return new Callback() {
             @Override
@@ -73,6 +79,7 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
                 filmeViewHolder.progressBar.setVisibility(View.GONE);
 
             }
+
             @Override
             public void onError() {
                 filmeViewHolder.progressBar.setVisibility(View.GONE);
@@ -81,15 +88,16 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
     }
 
     /**
-     *  Aplica a ação de click através da interface FilmeOnClickListener
-     *  @param filmeViewHolder
-     *  @param position
-     * **/
+     * Aplica a ação de click através da interface FilmeOnClickListener
+     *
+     * @param filmeViewHolder
+     * @param position
+     **/
     public View.OnClickListener getOnClickListener(final FilmeViewHolder filmeViewHolder, final int position) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( filmeOnClickListener != null ) {
+                if (filmeOnClickListener != null) {
                     filmeOnClickListener.onClickFilme(filmeViewHolder.itemView, position);
                 }
             }
@@ -110,11 +118,10 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
         ImageView img;
         ProgressBar progressBar;
         CardView cardView;
-        TextView tituloFilme;
 
         public FilmeViewHolder(View itemView) {
             super(itemView);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressImg);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progres_img);
             img = (ImageView) itemView.findViewById(R.id.filme_poster);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
         }

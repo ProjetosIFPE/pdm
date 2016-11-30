@@ -140,6 +140,17 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     }
 
     /**
+     * Adiciona o fragmento com um alerta de nenhum resultado disponível
+     */
+    public void adicionarAlertaNenhumResultadoDisponível() {
+        Bundle arguments = new Bundle();
+        AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
+        getChildFragmentManager().beginTransaction()
+                .add(R.id.fragment_filmes, alertNoResultsFragment,
+                        AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+    }
+
+    /**
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por ordem de lancamento
      **/
     public void consultarLancamentos() {
@@ -158,7 +169,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
             @Override
             public void updateView(List<Filme> filmes) {
-                atualizarRecyclerView(filmes);
+                verificarResultadoConsultaFilmes(filmes);
             }
 
         };
@@ -183,7 +194,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
             @Override
             public void updateView(List<Filme> filmes) {
-                atualizarRecyclerView(filmes);
+                verificarResultadoConsultaFilmes(filmes);
             }
 
         };
@@ -209,7 +220,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
             @Override
             public void updateView(List<Filme> filmes) {
-                atualizarRecyclerView(filmes);
+                verificarResultadoConsultaFilmes(filmes);
             }
 
         };
@@ -235,7 +246,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
             @Override
             public void updateView(List<Filme> filmes) {
-                atualizarRecyclerView(filmes);
+                verificarResultadoConsultaFilmes(filmes);
             }
 
         };
@@ -261,10 +272,19 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
             @Override
             public void updateView(List<Filme> filmes) {
-                atualizarRecyclerView(filmes);
+                verificarResultadoConsultaFilmes(filmes);
             }
 
         };
+    }
+
+    private void verificarResultadoConsultaFilmes(List<Filme> filmes) {
+        if (filmes != null && !filmes.isEmpty()) {
+            removerAlertaNenhumResultado();
+            atualizarRecyclerView(filmes);
+        } else {
+            adicionarAlertaNenhumResultadoDisponível();
+        }
     }
 
     /**
@@ -275,7 +295,6 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
      */
     private void atualizarRecyclerView(List<Filme> filmes) {
         mostrarListaFilmes();
-
         if (recyclerView != null && recyclerView.getAdapter() == null) {
             inicializarDadosRecyclerView(filmes);
         } else {
@@ -377,9 +396,24 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     public void removerAlertaConexaoIndisponivel() {
         Fragment fragment = getChildFragmentManager().findFragmentByTag(
                 AlertConnectivityFragment.ALERT_CONNECTIVITY_FRAGMENT);
-        getChildFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .remove(fragment).commit();
+        if (fragment != null) {
+            getChildFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .remove(fragment).commit();
+        }
+    }
+
+    /**
+     * Remover fragmento de alerta de nenhum resultado disponível
+     */
+    public void removerAlertaNenhumResultado() {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(
+                AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
+        if (fragment != null) {
+            getChildFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .remove(fragment).commit();
+        }
     }
 
 }

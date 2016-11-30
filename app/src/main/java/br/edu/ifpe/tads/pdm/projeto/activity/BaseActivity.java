@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
@@ -32,7 +31,6 @@ public class BaseActivity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
     protected DrawerLayout drawerLayout;
     protected NavigationView navigationView;
-    protected SlidingUpPanelLayout slidingUpPanelLayout;
 
     /**
      * Aplica a Toolbar como Action Bar
