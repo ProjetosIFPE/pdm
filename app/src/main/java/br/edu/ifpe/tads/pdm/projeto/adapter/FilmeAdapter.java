@@ -19,6 +19,7 @@ import org.parceler.apache.commons.lang.StringUtils;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 
 /**
@@ -34,6 +35,29 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
     private final Context context;
 
     private FilmeOnClickListener filmeOnClickListener;
+
+    public static final Categoria[] categorias = {
+            new Categoria(28, "Ação"),
+            new Categoria(12, "Aventura"),
+            new Categoria(16, "Animação"),
+            new Categoria(35, "Comedia"),
+            new Categoria(80, "Crime"),
+            new Categoria(99, "Documentario"),
+            new Categoria(18, "Drama"),
+            new Categoria(10751, "Familia"),
+            new Categoria(14, "Fantasia"),
+            new Categoria(36, "História"),
+            new Categoria(27, "Terror"),
+            new Categoria(10402, "Musical"),
+            new Categoria(9648, "Mistério"),
+            new Categoria(10749, "Romance"),
+            new Categoria(878, "Ficção"),
+            new Categoria(10770, "TV Movie"),
+            new Categoria(53, "Thriller"),
+            new Categoria(10752, "Guerra"),
+            new Categoria(37, "Faroeste")
+    };
+
 
     public FilmeAdapter(Context context, List<Filme> filmes, FilmeOnClickListener filmeOnClickListener) {
         this.context = context;

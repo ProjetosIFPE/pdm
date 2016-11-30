@@ -3,6 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.domain.filme;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Edmilson on 23/10/2016.
@@ -12,18 +13,27 @@ import java.io.Serializable;
 public class Categoria implements Serializable {
 
     @SerializedName("id")
-    private Long id;
+    private Integer id;
 
     @SerializedName("name")
     private String descricao;
 
+    public Categoria(Integer id, String descricao){
+        this.id = id;
+        this.descricao = descricao;
+    }
+
+    public Categoria() {
+        System.out.print("Sou doglas e sou gay");
+    }
+
     public final static String ROOT_JSON_OBJECT = "genres";
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

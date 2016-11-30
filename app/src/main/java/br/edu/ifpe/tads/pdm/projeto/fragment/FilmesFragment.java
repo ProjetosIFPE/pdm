@@ -15,7 +15,10 @@ import android.widget.ProgressBar;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
@@ -59,6 +62,8 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
     private FilmeService filmeService;
 
+
+
     public static FilmesFragment newInstance(Bundle bundle) {
         FilmesFragment filmesFragment = new FilmesFragment();
         filmesFragment.setArguments(bundle);
@@ -68,7 +73,6 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ApplicationService.getInstance().getBus().register(this);
         filmeService = ApplicationService.getInstance().getFilmeService();
 

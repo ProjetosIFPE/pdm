@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 
@@ -39,6 +40,9 @@ public class Filme implements Serializable {
     @SerializedName("backdrop_path")
     private String urlPlanoFundo;
 
+    @SerializedName("genre_ids")
+    private List<Integer> categoriaIds;
+
     private List<Categoria> categorias;
 
     private List<Musica> musicas;
@@ -48,6 +52,7 @@ public class Filme implements Serializable {
     public final static String ROOT_JSON_OBJECT = "results";
 
     public Filme(){}
+
     public Filme(String titulo, String tituloOriginal){
         this.titulo = titulo;
         this.tituloOriginal = tituloOriginal;
@@ -110,17 +115,46 @@ public class Filme implements Serializable {
     }
 
     public Musica getMusica(int index) {
-        if (musicas != null) {
+        if (musicas == null) {
             musicas = new ArrayList<>();
         }
         return musicas.get(index);
     }
 
     public void addMusica(Musica musica) {
-        if (musicas != null) {
+        if (musicas == null) {
             musicas = new ArrayList<>();
         }
         musicas.add(musica);
     }
+
+    public void addCategoria(Categoria categoria) {
+        if (categorias == null) {
+            categorias = new ArrayList<>();
+        }
+        categorias.add(categoria);
+    }
+
+    public Categoria getCategoria(int index) {
+        if (categorias == null) {
+            categorias = new ArrayList<>();
+        }
+        return categorias.get(index);
+    }
+
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void atualizarCategorias(Map<Integer, Categoria> categoriasPorId) {
+        if ( categoriasPorId != null && categoriaIds != null ) {
+            for (Integer idCategoria : categoriaIds) {
+                this.addCategoria(categoriasPorId.get(idCategoria));
+            }
+        }
+    }
+
+
+
 
 }

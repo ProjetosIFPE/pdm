@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/adapter_card_view_heigth"
     android:layout_margin="6dp"
-    android:foreground="?attr/selectableItemBackground"
     app:cardElevation="3dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="false"
