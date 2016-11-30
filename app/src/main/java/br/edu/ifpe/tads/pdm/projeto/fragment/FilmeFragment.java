@@ -1,16 +1,30 @@
 package br.edu.ifpe.tads.pdm.projeto.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.activity.CategoriaActivity;
+import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
+import br.edu.ifpe.tads.pdm.projeto.adapter.CategoriaAdapter;
+import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
 import br.edu.ifpe.tads.pdm.projeto.application.ApplicationService;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
@@ -20,6 +34,7 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 public class FilmeFragment extends BaseFragment {
 
+    public static final int SPAN_COUNT = 1;
     private Filme filme;
 
     private FilmeService filmeService;
@@ -48,11 +63,22 @@ public class FilmeFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.fragment_filme, container, false);
         TextView filmeDescricao = (TextView) view.findViewById(R.id.filme_descricao);
+
+        RecyclerView listaCategorias = (RecyclerView) view.findViewById(R.id.lista_categorias);
+        listaCategorias.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT, GridLayoutManager.HORIZONTAL, Boolean.FALSE));
+        listaCategorias.setItemAnimator(new DefaultItemAnimator());
+        listaCategorias.setHasFixedSize(Boolean.TRUE);
+
+        listaCategorias.setAdapter(new CategoriaAdapter(getContext(), filme.getCategorias(), onClickCategoria()));
+
         filmeDescricao.setText(filme.getSinopse());
+
         getFavoriteButton();
         checkFavorito();
+
         return view;
     }
+
 
     public void getFavoriteButton() {
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -89,6 +115,7 @@ public class FilmeFragment extends BaseFragment {
             }
         };
     }
+
 
     public void favoritarFilme() {
         startTask(getTaskFavoritar());
@@ -129,5 +156,21 @@ public class FilmeFragment extends BaseFragment {
         } else {
             fab.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.accent));
         }
+    }
+
+    /**
+     * Controla evento de clique em categorias de um filme
+     **/
+    private CategoriaAdapter.CategoriaOnClickListener onClickCategoria() {
+        return new CategoriaAdapter.CategoriaOnClickListener() {
+            @Override
+            public void onClickCategoria(View view, int idx) {
+                Categoria categoria = filme.getCategoria(idx);
+                Intent intent = new Intent(getContext(), CategoriaActivity.class);
+                intent.putExtra(CategoriaActivity.CATEGORIA_FILME, categoria.getDescricao());
+                startActivity(intent);
+
+            }
+        };
     }
 }
