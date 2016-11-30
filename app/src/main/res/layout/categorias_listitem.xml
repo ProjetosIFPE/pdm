@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="16dp"
         android:background="@color/accent"
         android:foreground="?attr/selectableItemBackground"
         app:cardElevation="3dp"
@@ -20,6 +19,8 @@
         card_view:cardElevation="6dp">
 
         <TextView
+            android:padding="16dp"
+            android:background="@color/accent"
             android:id="@+id/categoria_descricao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

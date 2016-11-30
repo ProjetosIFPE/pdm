@@ -149,9 +149,11 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     public void adicionarAlertaNenhumResultadoDisponível() {
         Bundle arguments = new Bundle();
         AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
-        getChildFragmentManager().beginTransaction()
-                .add(R.id.fragment_filmes, alertNoResultsFragment,
-                        AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+        if( getActivity() != null) {
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.fragment_filmes, alertNoResultsFragment,
+                            AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+        }
     }
 
     /**
@@ -287,7 +289,15 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
             removerAlertaNenhumResultado();
             atualizarRecyclerView(filmes);
         } else {
+            esconderResultados();
             adicionarAlertaNenhumResultadoDisponível();
+        }
+    }
+
+    private void esconderResultados() {
+        if ( recyclerView != null && progressRecyclerView != null) {
+            recyclerView.setVisibility(View.GONE);
+            progressRecyclerView.setVisibility(View.GONE);
         }
     }
 

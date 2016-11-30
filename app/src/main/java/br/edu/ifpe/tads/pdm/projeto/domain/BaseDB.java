@@ -31,20 +31,34 @@ public class BaseDB extends SQLiteOpenHelper {
 
     public static final class ApplicationDBContract {
         public static final String DATABASE_NAME = "Application.db";
-        public static final int DATABASE_VERSION = 1;
+        public static final int DATABASE_VERSION = 5;
 
         public static final String SQL_CREATE_FILME_TABLE =
                 " CREATE TABLE IF NOT EXISTS " + Filme.TABLE_NAME + " ( " +
                         Filme._ID + " INTEGER PRIMARY KEY, " +
                         Filme.COLUMN_NAME_FILME_TITULO + " TEXT, " +
-                        Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL + " TEXT " + ")";
+                        Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL + " TEXT, " +
+                        Filme.COLUMN_NAME_FILME_SINOPSE + " TEXT " + ")";
+
+        public static final String SQL_CREATE_CATEGORIA_TABLE =
+                " CREATE TABLE IF NOT EXISTS " + Categoria.TABLE_NAME + " ( " +
+                        Categoria._ID + " INTEGER PRIMARY KEY, " +
+                        Categoria.COLUMN_NAME_CATEGORIA_DESCRICAO + " TEXT " + ")";
 
         public static final String SQL_DELETE_FILME_TABLE = "DROP TABLE IF EXISTS " + Filme.TABLE_NAME;
+
+        public static final String SQL_DELETE_CATEGORIA_TABLE = "DROP TABLE IF EXISTS " + Filme.TABLE_NAME;
 
         public static abstract class Filme implements BaseColumns {
             public static final String TABLE_NAME = "Filme";
             public static final String COLUMN_NAME_FILME_TITULO = "titulo";
             public static final String COLUMN_NAME_FILME_TITULO_ORIGINAL = "titulo_original";
+            public static final String COLUMN_NAME_FILME_SINOPSE = "sinopse";
+        }
+
+        public static abstract class Categoria implements BaseColumns {
+            public static final String TABLE_NAME = "Categoria";
+            public static final String COLUMN_NAME_CATEGORIA_DESCRICAO = "descricao";
         }
     }
 

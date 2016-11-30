@@ -17,8 +17,6 @@ import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
 
 public class FilmeActivity extends BaseActivity {
 
-    private Filme filmeService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

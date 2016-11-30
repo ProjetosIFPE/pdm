@@ -152,9 +152,11 @@ public class MusicasFragment extends BaseFragment {
     public void adicionarAlertaNenhumResultadoDisponível() {
         Bundle arguments = new Bundle();
         AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
-        getChildFragmentManager().beginTransaction()
-                .add(R.id.fragment_musicas, alertNoResultsFragment,
-                        AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+        if (getActivity() != null) {
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.fragment_musicas, alertNoResultsFragment,
+                            AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+        }
     }
 
     public MusicaAdapter.MusicaOnClickListener onClickMusica() {

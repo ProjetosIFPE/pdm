@@ -107,7 +107,7 @@ public class Filme implements Serializable {
     }
 
     public String getUrlPlanoFundo() {
-        return StringUtils.isNotEmpty(urlPoster)? BASE_URL_POSTER.concat(urlPlanoFundo) : "";
+        return StringUtils.isNotEmpty(urlPlanoFundo)? BASE_URL_POSTER.concat(urlPlanoFundo) : "";
     }
 
     public void setUrlPlanoFundo(String urlPlanoFundo) {

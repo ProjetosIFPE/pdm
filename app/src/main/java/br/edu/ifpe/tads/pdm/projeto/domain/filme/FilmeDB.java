@@ -29,6 +29,7 @@ public class FilmeDB extends BaseDB {
             values.put(BaseDB.ApplicationDBContract.Filme._ID, filme.getId());
             values.put(BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO, filme.getTitulo());
             values.put(BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL, filme.getTituloOriginal());
+            values.put(ApplicationDBContract.Filme.COLUMN_NAME_FILME_SINOPSE, filme.getSinopse());
             long newId = db.insert(BaseDB.ApplicationDBContract.Filme.TABLE_NAME, null, values);
             return newId;
         } finally {
@@ -71,7 +72,8 @@ public class FilmeDB extends BaseDB {
         try {
             String[] colunas = {BaseDB.ApplicationDBContract.Filme._ID,
                     BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO,
-                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL};
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL,
+                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_SINOPSE};
 
             Cursor cursor = db.query(BaseDB.ApplicationDBContract.Filme.TABLE_NAME,
                     colunas, null, null, null, null, null);
@@ -85,14 +87,18 @@ public class FilmeDB extends BaseDB {
         List<Filme> filmes = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
-            Filme filme = new Filme();
-            filme.setId(Long.valueOf(cursor.getInt(cursor.getColumnIndex(
-                    BaseDB.ApplicationDBContract.Filme._ID))));
-            filme.setTitulo(cursor.getString(cursor.getColumnIndex(
-                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO)));
-            filme.setTituloOriginal(cursor.getString(cursor.getColumnIndex(
-                    BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL)));
-            filmes.add(filme);
+           do {
+               Filme filme = new Filme();
+               filme.setId(Long.valueOf(cursor.getInt(cursor.getColumnIndex(
+                       BaseDB.ApplicationDBContract.Filme._ID))));
+               filme.setTitulo(cursor.getString(cursor.getColumnIndex(
+                       BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO)));
+               filme.setTituloOriginal(cursor.getString(cursor.getColumnIndex(
+                       BaseDB.ApplicationDBContract.Filme.COLUMN_NAME_FILME_TITULO_ORIGINAL)));
+               filme.setSinopse(cursor.getString(cursor.getColumnIndex(
+                       ApplicationDBContract.Filme.COLUMN_NAME_FILME_SINOPSE)));
+               filmes.add(filme);
+           } while (cursor.moveToNext());
         }
         return filmes;
     }

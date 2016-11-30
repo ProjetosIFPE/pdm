@@ -34,7 +34,7 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 public class FilmeFragment extends BaseFragment {
 
-    public static final int SPAN_COUNT = 1;
+    public static final int SPAN_COUNT = 2;
     private Filme filme;
 
     private FilmeService filmeService;
