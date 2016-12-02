@@ -65,7 +65,8 @@ public class FilmeFragment extends BaseFragment {
         TextView filmeDescricao = (TextView) view.findViewById(R.id.filme_descricao);
 
         RecyclerView listaCategorias = (RecyclerView) view.findViewById(R.id.lista_categorias);
-        listaCategorias.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT, GridLayoutManager.HORIZONTAL, Boolean.FALSE));
+        //listaCategorias.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT, GridLayoutManager.HORIZONTAL, Boolean.FALSE));
+        listaCategorias.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         listaCategorias.setItemAnimator(new DefaultItemAnimator());
         listaCategorias.setHasFixedSize(Boolean.TRUE);
 
