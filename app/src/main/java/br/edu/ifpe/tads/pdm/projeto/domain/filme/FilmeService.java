@@ -17,12 +17,14 @@ import br.edu.ifpe.tads.pdm.projeto.util.DateUtil;
  */
 public class FilmeService extends BaseService {
 
-    private static final String URL_PESQUISA_FILME_POR_TITULO = "https://api.themoviedb.org/3/search/movie?api_key={key}&language={language}&query={titulo}";
-    private static final String URL_PESQUISA_FILME_POR_CATEGORIA = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}&with_genres={genres}";
+    private static final String URL_PESQUISA_FILME_POR_TITULO = "https://api.themoviedb.org/3/search/movie?api_key={key}&language={language}&query={titulo}&page={page}";
+    private static final String URL_PESQUISA_FILME_POR_CATEGORIA = "https://api.themoviedb.org/3/genre/{genre}/movies?api_key={key}&language={language}&sort_by={sort}&page={page}";
     private static final String URL_PESQUISA_CATEGORIA = "https://api.themoviedb.org/3/genre/movie/list?api_key={key}&language={language}";
     private static final String URL_PESQUISA_FILME_POR_POPULARIDADE = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}";
     private static final String URL_PESQUISA_FILME_POR_LANCAMENTO = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}&primary_release_date.lte={release-date}";
 
+
+    private final int FIRST_PAGE = 1;
 
     /**
      * Realiza a consulta dos géneros que estão disponíveis no TMDB
@@ -59,13 +61,25 @@ public class FilmeService extends BaseService {
      * @return
      */
     public List<Filme> getLancamentos(Context context) {
+        return getLancamentos(context, FIRST_PAGE);
+    }
+
+
+    /**
+     * Obtém os filmes que foram adicionados recentemente,
+     * permitindo paginação.
+     *
+     * @param context
+     * @return
+     */
+    public List<Filme> getLancamentos(Context context, int page) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_LANCAMENTO
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
                 .replace("{key}", API_KEY)
                 .replace("{release-date}", DateUtil.dateToString(Calendar.getInstance()))
                 .replace("{sort}", TMDBParameters.ORDER_BY_RELEASE_DATE_DESC)
-                .replace("{page}", FilmeService.TMDBParameters.FIRST_PAGE);
+                .replace("{page}", String.valueOf(page));
         return parseJsonFilmes(context, url);
     }
 
@@ -77,30 +91,26 @@ public class FilmeService extends BaseService {
      * @return
      */
     public List<Filme> getPopulares(Context context) {
+        return getPopulares(context, FIRST_PAGE);
+    }
+
+    /**
+     * Obtém os filmes por popularidade, permitindo paginação
+     *
+     * @param context
+     * @param page
+     * @return
+     */
+    public List<Filme> getPopulares(Context context, int page) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_POPULARIDADE
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
                 .replace("{key}", API_KEY)
                 .replace("{sort}", FilmeService.TMDBParameters.ORDER_BY_POPULARITY_DESC)
-                .replace("{page}", FilmeService.TMDBParameters.FIRST_PAGE);
+                .replace("{page}", String.valueOf(page));
         return parseJsonFilmes(context, url);
     }
 
-    /**
-     * Obtém os filmes que foram adicionados recentemente
-     *
-     * @param context
-     * @return
-     */
-    public List<Filme> getFilmes(Context context) {
-        final String API_KEY = context.getString(R.string.API_KEY_TMDB);
-        String url = URL_PESQUISA_FILME_POR_CATEGORIA
-                .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
-                .replace("{key}", API_KEY)
-                .replace("{sort}", FilmeService.TMDBParameters.ORDER_BY_POPULARITY_DESC)
-                .replace("{page}", FilmeService.TMDBParameters.FIRST_PAGE);
-        return parseJsonFilmes(context, url);
-    }
 
     /**
      * Realiza a consulta de filmes no TMDB, por categoria
@@ -110,13 +120,25 @@ public class FilmeService extends BaseService {
      * @return
      */
     public List<Filme> getFilmes(Context context, Categoria categoria) {
+        return this.getFilmes(context, categoria, FIRST_PAGE);
+    }
+
+    /**
+     * Realiza a consulta de filmes no TMDB, por categoria,
+     * permitindo paginação
+     *
+     * @param context
+     * @param categoria
+     * @return
+     */
+    public List<Filme> getFilmes(Context context, Categoria categoria, int page) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_CATEGORIA
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR)
                 .replace("{key}", API_KEY)
                 .replace("{sort}", FilmeService.TMDBParameters.ORDER_BY_POPULARITY_DESC)
-                .replace("{page}", FilmeService.TMDBParameters.FIRST_PAGE)
-                .replace("{genres}", String.valueOf(categoria.getId()));
+                .replace("{page}", String.valueOf(page))
+                .replace("{genre}", String.valueOf(categoria.getId()));
         return parseJsonFilmes(context, url);
     }
 
@@ -129,10 +151,23 @@ public class FilmeService extends BaseService {
      * @return
      */
     public List<Filme> getFilmes(Context context, String titulo) {
+        return this.getFilmes(context, titulo, FIRST_PAGE);
+    }
+
+    /**
+     * Realiza a consulta de filmes no TMDB, por título,
+     * permitindo paginação
+     *
+     * @param context
+     * @param titulo
+     * @return
+     */
+    public List<Filme> getFilmes(Context context, String titulo, int page) {
         final String API_KEY = context.getString(R.string.API_KEY_TMDB);
         String url = URL_PESQUISA_FILME_POR_TITULO
                 .replace("{key}", API_KEY)
                 .replace("{titulo}", titulo)
+                .replace("{page}", String.valueOf(page))
                 .replace("{language}", TMDBParameters.LANGUAGE_PT_BR);
         return parseJsonFilmes(context, url);
     }

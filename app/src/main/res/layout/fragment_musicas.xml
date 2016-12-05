@@ -11,6 +11,8 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
         android:scrollbars="vertical" />
 
     <ProgressBar

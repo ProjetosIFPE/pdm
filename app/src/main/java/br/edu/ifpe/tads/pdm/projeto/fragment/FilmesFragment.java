@@ -15,10 +15,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.otto.Subscribe;
 
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
@@ -28,11 +25,12 @@ import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
+import br.edu.ifpe.tads.pdm.projeto.listener.EndlessRecyclerViewScrollListener;
 import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
 import br.edu.ifpe.tads.pdm.projeto.util.NetworkUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
-public class FilmesFragment extends BaseFragment implements AlertConnectivityFragment.AlertConnectivityListener {
+public class FilmesFragment extends BaseConnectivityFragment {
 
     public static final String FILMES_POR_TITULO = "FILMES_POR_TITULO";
 
@@ -62,6 +60,9 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
 
     private FilmeService filmeService;
 
+    private EndlessRecyclerViewScrollListener scrollListaFilmes;
+
+    private int searchPageIndex = 1;
 
 
     public static FilmesFragment newInstance(Bundle bundle) {
@@ -86,40 +87,45 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
         }
     }
 
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View createFragmentView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_filmes, container, Boolean.FALSE);
 
-        configurarListaFilmes(view);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        progressRecyclerView = (ProgressBar) view.findViewById(R.id.progressRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        scrollListaFilmes = criarScrollListaFilmes();
+        recyclerView.addOnScrollListener(scrollListaFilmes);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setHasFixedSize(Boolean.TRUE);
 
-        if (NetworkUtil.isConnected(getContext())) {
-            esconderListaFilmes();
-            consultarFilmes();
-        } else {
-            adicionarAlertaConexaoIndisponivel();
-        }
 
         return view;
     }
 
-
-    /**
-     * Realiza as configurações de layout do Recycler View e
-     * do progress bar
-     *
-     * @param fragmentView
-     */
-    private void configurarListaFilmes(View fragmentView) {
-        recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerView);
-        progressRecyclerView = (ProgressBar) fragmentView.findViewById(R.id.progressRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(Boolean.TRUE);
+    @Override
+    void startFragmentTask() {
+        esconderListaFilmes();
+        consultarFilmes();
     }
 
-    public void consultarFilmes() {
+
+    /**
+     * Cria o listener para o scroll da lista de filmes
+     *
+     * @return
+     */
+    private EndlessRecyclerViewScrollListener criarScrollListaFilmes() {
+        return new EndlessRecyclerViewScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount, RecyclerView recyclerView) {
+                searchPageIndex = page;
+                return consultarFilmes();
+            }
+        };
+    }
+
+    public Boolean consultarFilmes() {
         if (popularidade) {
             consultarFilmesPopulares();
         } else if (lancamento) {
@@ -131,25 +137,18 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
         } else if (favoritos) {
             consultarFilmesFavoritos();
         }
+        return false;
     }
 
-    /**
-     * Adiciona o fragmento com um alerta de conexão indisponível
-     */
-    public void adicionarAlertaConexaoIndisponivel() {
-        AlertConnectivityFragment alertConnectivityFragment = AlertConnectivityFragment.newInstance(this);
-        getChildFragmentManager().beginTransaction()
-                .add(R.id.fragment_filmes, alertConnectivityFragment,
-                        AlertConnectivityFragment.ALERT_CONNECTIVITY_FRAGMENT).commit();
-    }
+
 
     /**
      * Adiciona o fragmento com um alerta de nenhum resultado disponível
      */
-    public void adicionarAlertaNenhumResultadoDisponível() {
+    private void adicionarAlertaNenhumResultadoDisponível() {
         Bundle arguments = new Bundle();
         AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
-        if( getActivity() != null) {
+        if (getActivity() != null) {
             getChildFragmentManager().beginTransaction()
                     .add(R.id.fragment_filmes, alertNoResultsFragment,
                             AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
@@ -159,7 +158,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     /**
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por ordem de lancamento
      **/
-    public void consultarLancamentos() {
+    private void consultarLancamentos() {
         startTask(getFilmesLancadosRecentemente());
     }
 
@@ -170,7 +169,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                return filmeService.getLancamentos(getContext());
+                return filmeService.getLancamentos(getContext(), searchPageIndex);
             }
 
             @Override
@@ -184,7 +183,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     /**
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por popularidade
      **/
-    public void consultarFilmesPopulares() {
+    private void consultarFilmesPopulares() {
         startTask(getFilmesPorPopularidade());
     }
 
@@ -195,7 +194,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                return filmeService.getPopulares(getContext());
+                return filmeService.getPopulares(getContext(), searchPageIndex);
             }
 
             @Override
@@ -211,7 +210,8 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por titulo
      **/
     public void consultarFilmes(String titulo) {
-        startTask(getFilmes(titulo));
+        this.titulo = titulo;
+        startTask(getFilmes(this.titulo));
     }
 
     /**
@@ -236,7 +236,8 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por categoria
      **/
     public void consultarFilmesPorCategoria(String categoria) {
-        startTask(getFilmesPorCategoria(categoria));
+        this.descricaoCategoria = categoria;
+        startTask(getFilmesPorCategoria(this.descricaoCategoria));
     }
 
     /**
@@ -247,7 +248,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
             @Override
             public List<Filme> execute() throws Exception {
                 Categoria categoria = filmeService.getCategoria(getContext(), descricaoCategoria);
-                return filmeService.getFilmes(getContext(), categoria);
+                return filmeService.getFilmes(getContext(), categoria, searchPageIndex);
             }
 
             @Override
@@ -261,7 +262,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     /**
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes favoritos
      **/
-    public void consultarFilmesFavoritos() {
+    private void consultarFilmesFavoritos() {
         startTask(getFilmesFavoritos());
     }
 
@@ -295,7 +296,7 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     }
 
     private void esconderResultados() {
-        if ( recyclerView != null && progressRecyclerView != null) {
+        if (recyclerView != null && progressRecyclerView != null) {
             recyclerView.setVisibility(View.GONE);
             progressRecyclerView.setVisibility(View.GONE);
         }
@@ -323,8 +324,25 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
      */
     private void atualizarDadosRecyclerView(List<Filme> novosFilmes) {
         if (this.filmes != null && recyclerView != null) {
-            filmes.clear();
             filmes.addAll(novosFilmes);
+            notificarAtualizacoesAdapter();
+        }
+    }
+
+    public void reiniciarListaFilmes() {
+        if (filmes != null && scrollListaFilmes != null) {
+            filmes.clear();
+            notificarAtualizacoesAdapter();
+            scrollListaFilmes.resetState();
+        }
+    }
+
+    /**
+     * Notifica o adapter das alterações na lista
+     * de filmes
+     */
+    private void notificarAtualizacoesAdapter() {
+        if (recyclerView != null) {
             RecyclerView.Adapter adapter = recyclerView.getAdapter();
             if (adapter != null) {
                 adapter.notifyDataSetChanged();
@@ -396,31 +414,11 @@ public class FilmesFragment extends BaseFragment implements AlertConnectivityFra
     }
 
 
-    @Override
-    public void onConnectivityChange() {
-        if (NetworkUtil.isConnected(getContext())) {
-            removerAlertaConexaoIndisponivel();
-            consultarFilmes();
-        }
-    }
-
-    /**
-     * Remover fragmento de alerta de conexão indisponível
-     */
-    public void removerAlertaConexaoIndisponivel() {
-        Fragment fragment = getChildFragmentManager().findFragmentByTag(
-                AlertConnectivityFragment.ALERT_CONNECTIVITY_FRAGMENT);
-        if (fragment != null) {
-            getChildFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .remove(fragment).commit();
-        }
-    }
 
     /**
      * Remover fragmento de alerta de nenhum resultado disponível
      */
-    public void removerAlertaNenhumResultado() {
+    private void removerAlertaNenhumResultado() {
         Fragment fragment = getChildFragmentManager().findFragmentByTag(
                 AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
         if (fragment != null) {

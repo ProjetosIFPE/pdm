@@ -1,14 +1,10 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
-import android.app.SearchManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 
 public class CategoriaActivity extends BaseActivity {
@@ -35,22 +31,41 @@ public class CategoriaActivity extends BaseActivity {
     }
 
     public void doSearch(Boolean firstSearch) {
-        String categoria =  getIntent()
+        String categoria = getIntent()
                 .getStringExtra(CATEGORIA_FILME);
 
         getSupportActionBar().setTitle(categoria);
 
-        if ( firstSearch ) {
-            Bundle arguments = new Bundle();
-            arguments.putString(FilmesFragment.FILMES_POR_CATEGORIA, categoria);
-            FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_filmes, filmesFragment).commit();
+        if (firstSearch) {
+            realizarPrimeiraPesquisaPorCategoria(categoria);
         } else {
-            FilmesFragment filmesFragment = (FilmesFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_filmes);
+            realizarNovaPesquisaPorCategoria(categoria);
+        }
+    }
+
+    public void realizarPrimeiraPesquisaPorCategoria(String categoria) {
+        Bundle arguments = new Bundle();
+        arguments.putString(FilmesFragment.FILMES_POR_CATEGORIA, categoria);
+        adicionarFilmesFragment(arguments);
+    }
+
+    public void realizarNovaPesquisaPorCategoria(String categoria) {
+        FilmesFragment filmesFragment = getFilmesFragment();
+        if (filmesFragment != null) {
+            filmesFragment.reiniciarListaFilmes();
             filmesFragment.consultarFilmesPorCategoria(categoria);
         }
+    }
+
+    public FilmesFragment getFilmesFragment() {
+        return (FilmesFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_filmes);
+    }
+
+    public void adicionarFilmesFragment(Bundle arguments) {
+        FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_filmes, filmesFragment).commit();
     }
 
     @Override

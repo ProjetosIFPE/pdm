@@ -25,11 +25,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.activity.MainActivity;
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 import br.edu.ifpe.tads.pdm.projeto.util.IOUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.NotificationUtil;
@@ -48,18 +46,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String ACTION_NEXT = "br.edu.ifpe.tads.pdm.projeto.ACTION_NEXT";
     public static final String ACTION_STOP = "br.edu.ifpe.tads.pdm.projeto.ACTION_STOP";
     public static final String BROADCAST_PLAY_NEW_AUDIO = "br.edu.ifpe.tads.pdm.projeto.BROADCAST_PLAY_NEW_AUDIO";
+    public static final String AUDIO_INDEX = "AUDIO_INDEX";
+    public static final String AUDIO_LIST = "AUDIO_LIST";
     private static int NOTIFICATION_ID = 101;
     private final String TAG = getClass().getSimpleName();
     private final IBinder iBinder = new LocalBinder();
-    public static final String AUDIO_INDEX = "AUDIO_INDEX";
-    public static final String AUDIO_LIST = "AUDIO_LIST";
     private MediaSessionManager mediaSessionManager;
     private MediaSessionCompat mediaSession;
     private MediaControllerCompat.TransportControls transportControls;
     private MediaPlayer mediaPlayer;
     private int resumePosition;
     private AudioManager audioManager;
-    private List<Musica> playlist;
+    private List<Musica> musicas;
     private int audioIndex = -1;
     private Musica musicaAtiva;
     private Boolean ongoingCall = Boolean.FALSE;
@@ -77,8 +75,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         @Override
         public void onReceive(Context context, Intent intent) {
             audioIndex = IOUtil.getInt(getApplicationContext(), AUDIO_INDEX);
-            if (audioIndex != -1 && audioIndex < playlist.size()) {
-                musicaAtiva = playlist.get(audioIndex);
+            if (audioIndex != -1 && audioIndex < musicas.size()) {
+                musicaAtiva = musicas.get(audioIndex);
             } else {
                 stopSelf();
             }
@@ -106,11 +104,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        this.playlist = IOUtil.getList(Musica[].class, getApplicationContext(), AUDIO_LIST);
+        this.musicas = IOUtil.getList(Musica[].class, getApplicationContext(), AUDIO_LIST);
         audioIndex = IOUtil.getInt(getApplicationContext(), AUDIO_INDEX);
 
-        if (audioIndex != -1 && audioIndex < playlist.size()) {
-            musicaAtiva = playlist.get(audioIndex);
+        if (audioIndex != -1 && audioIndex < musicas.size()) {
+            musicaAtiva = musicas.get(audioIndex);
         } else {
             stopSelf();
         }
@@ -159,10 +157,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
         mediaSession = new MediaSessionCompat(getApplicationContext(), "AudioPlayer");
         transportControls = mediaSession.getController().getTransportControls();
-
         mediaSession.setActive(Boolean.TRUE);
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
         updateMetadata();
 
         mediaSession.setCallback(createMediaSessionCallback());
@@ -220,11 +216,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void skipToNext() {
-        if (audioIndex == playlist.size() - 1) {
+        if (audioIndex == musicas.size() - 1) {
             audioIndex = 0;
-            musicaAtiva = playlist.get(audioIndex);
+            musicaAtiva = musicas.get(audioIndex);
         } else {
-            musicaAtiva = playlist.get(++audioIndex);
+            musicaAtiva = musicas.get(++audioIndex);
         }
 
         IOUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
@@ -236,10 +232,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void skipToPrevious() {
         if (audioIndex == 0) {
-            audioIndex = playlist.size() - 1;
-            musicaAtiva = playlist.get(audioIndex);
+            audioIndex = musicas.size() - 1;
+            musicaAtiva = musicas.get(audioIndex);
         } else {
-            musicaAtiva = playlist.get(--audioIndex);
+            musicaAtiva = musicas.get(--audioIndex);
         }
 
         IOUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
@@ -349,8 +345,21 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        stopMedia();
-        stopSelf();
+        if (transportControls != null) {
+            if (!ultimaMusica()) {
+                transportControls.skipToNext();
+            } else {
+                transportControls.stop();
+            }
+        }
+    }
+
+    public Boolean ultimaMusica() {
+        Boolean ultima = Boolean.FALSE;
+        if (musicas != null && musicaAtiva != null) {
+            ultima = musicas.get(musicas.size() - 1).equals(musicaAtiva);
+        }
+        return ultima;
     }
 
     @Override

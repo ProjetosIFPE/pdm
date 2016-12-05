@@ -18,8 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.fragment.dialog.AboutDialog;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
@@ -31,6 +31,7 @@ public class BaseActivity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
     protected DrawerLayout drawerLayout;
     protected NavigationView navigationView;
+    protected final String ID_MENU_SELECIONADO = "ID_MENU_SELECIONADO";
 
     /**
      * Aplica a Toolbar como Action Bar
@@ -58,6 +59,8 @@ public class BaseActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        selecionarItemMenuNavegacao();
+
         if (navigationView != null && drawerLayout != null) {
             navigationView.setNavigationItemSelectedListener(
                     new NavigationView.OnNavigationItemSelectedListener() {
@@ -72,6 +75,17 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public void selecionarItemMenuNavegacao() {
+        if (navigationView != null) {
+            Intent intent = getIntent();
+            if ( intent != null ) {
+                int idMenuSelecionado = intent.getIntExtra(ID_MENU_SELECIONADO, 0);
+                MenuItem item = navigationView.getMenu().findItem(idMenuSelecionado);
+                item.setChecked(Boolean.TRUE);
+            }
+        }
+    }
+
     /**
      * Configura as abas da tela
      */
@@ -83,10 +97,6 @@ public class BaseActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-
-        int cor = ContextCompat.getColor(getContext(), R.color.white);
-
-        tabLayout.setTabTextColors(cor, cor);
     }
 
     /**
@@ -99,13 +109,18 @@ public class BaseActivity extends AppCompatActivity {
         switch (menuItem.getItemId()) {
             case R.id.nav_item_inicio:
                 intent = new Intent(getContext(), MainActivity.class);
+                intent.putExtra(ID_MENU_SELECIONADO, menuItem.getItemId());
+                startActivity(intent);
+                break;
+            case R.id.nav_about_us:
+                AboutDialog.showAbout(getSupportFragmentManager());
                 break;
             default:
                 intent = new Intent(getContext(), CategoriaActivity.class);
                 intent.putExtra(CategoriaActivity.CATEGORIA_FILME, menuItem.getTitle());
+                intent.putExtra(ID_MENU_SELECIONADO, menuItem.getItemId());
+                startActivity(intent);
         }
-
-        startActivity(intent);
     }
 
     /**

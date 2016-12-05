@@ -47,7 +47,9 @@ public class Filme implements Serializable {
 
     private List<Musica> musicas;
 
-    private final static String BASE_URL_POSTER = "https://image.tmdb.org/t/p/w500";
+    private final static String BASE_URL_POSTER = "https://image.tmdb.org/t/p/w342";
+
+    private final static String BASE_URL_PLANO_FUNDO = "https://image.tmdb.org/t/p/w780";
 
     public final static String ROOT_JSON_OBJECT = "results";
 
@@ -107,7 +109,7 @@ public class Filme implements Serializable {
     }
 
     public String getUrlPlanoFundo() {
-        return StringUtils.isNotEmpty(urlPlanoFundo)? BASE_URL_POSTER.concat(urlPlanoFundo) : "";
+        return StringUtils.isNotEmpty(urlPlanoFundo)? BASE_URL_PLANO_FUNDO.concat(urlPlanoFundo) : "";
     }
 
     public void setUrlPlanoFundo(String urlPlanoFundo) {

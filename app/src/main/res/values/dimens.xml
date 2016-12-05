@@ -6,9 +6,11 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="default_text_padding">6dp</dimen>
     <dimen name="img_poster_width">250dp</dimen>
+    <dimen name="img_plano_fundo_width">300dp</dimen>
+    <dimen name="img_plano_fundo_height">300dp</dimen>
     <dimen name="img_poster_height">300dp</dimen>
-    <dimen name="adapter_card_view_width">166dp</dimen>
-    <dimen name="adapter_card_view_heigth">250dp</dimen>
+    <dimen name="adapter_card_view_width">342dp</dimen>
+    <dimen name="adapter_card_view_heigth">342dp</dimen>
 
     <!-- Dimensões do menu de navegação lateral -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>

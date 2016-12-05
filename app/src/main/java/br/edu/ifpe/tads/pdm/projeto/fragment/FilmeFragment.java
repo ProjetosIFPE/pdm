@@ -6,23 +6,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.activity.CategoriaActivity;
-import br.edu.ifpe.tads.pdm.projeto.activity.FilmeActivity;
 import br.edu.ifpe.tads.pdm.projeto.adapter.CategoriaAdapter;
-import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
 import br.edu.ifpe.tads.pdm.projeto.application.ApplicationService;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
@@ -65,8 +58,7 @@ public class FilmeFragment extends BaseFragment {
         TextView filmeDescricao = (TextView) view.findViewById(R.id.filme_descricao);
 
         RecyclerView listaCategorias = (RecyclerView) view.findViewById(R.id.lista_categorias);
-        //listaCategorias.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT, GridLayoutManager.HORIZONTAL, Boolean.FALSE));
-        listaCategorias.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        listaCategorias.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         listaCategorias.setItemAnimator(new DefaultItemAnimator());
         listaCategorias.setHasFixedSize(Boolean.TRUE);
 

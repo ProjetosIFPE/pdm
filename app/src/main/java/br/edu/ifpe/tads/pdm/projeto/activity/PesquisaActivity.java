@@ -1,12 +1,9 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.support.v7.widget.SearchView;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
@@ -31,7 +28,7 @@ public class PesquisaActivity extends BaseActivity {
         setUpToolbar();
         setUpNavDrawer();
 
-        if ( savedInstanceState == null ) {
+        if (savedInstanceState == null) {
             doSearch(Boolean.TRUE);
         }
 
@@ -42,21 +39,40 @@ public class PesquisaActivity extends BaseActivity {
         String titulo = "";
         Intent intent = getIntent();
 
-        if ( Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             titulo = intent.getStringExtra(SearchManager.QUERY);
         }
 
-        if ( firstSearch ) {
-            Bundle arguments = new Bundle();
-            arguments.putString(FilmesFragment.FILMES_POR_TITULO, titulo);
-            FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.filmes_fragment, filmesFragment).commit();
+        if (firstSearch) {
+            realizarPrimeiraPesquisaPorTitulo(titulo);
         } else {
-            FilmesFragment filmesFragment = (FilmesFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.filmes_fragment);
+            realizarNovaPesquisaPorTitulo(titulo);
+        }
+    }
+
+    private void realizarPrimeiraPesquisaPorTitulo(String titulo) {
+        Bundle arguments = new Bundle();
+        arguments.putString(FilmesFragment.FILMES_POR_TITULO, titulo);
+        adicionarFilmesFragment(arguments);
+    }
+
+    private void realizarNovaPesquisaPorTitulo(String titulo) {
+        FilmesFragment filmesFragment = getFilmesFragment();
+        if (filmesFragment != null) {
+            filmesFragment.reiniciarListaFilmes();
             filmesFragment.consultarFilmes(titulo);
         }
+    }
+
+    private void adicionarFilmesFragment(Bundle arguments) {
+        FilmesFragment filmesFragment = FilmesFragment.newInstance(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.filmes_fragment, filmesFragment).commit();
+    }
+
+    private FilmesFragment getFilmesFragment() {
+        return (FilmesFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.filmes_fragment);
     }
 
     @Override

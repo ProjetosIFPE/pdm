@@ -29,7 +29,7 @@ import br.edu.ifpe.tads.pdm.projeto.util.IOUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 
-public class MusicasFragment extends BaseFragment {
+public class MusicasFragment extends BaseConnectivityFragment {
 
     public static final String SERVICE_BOUND = "SERVICE_BOUND";
     public static final String FILME = "FILME";
@@ -38,6 +38,7 @@ public class MusicasFragment extends BaseFragment {
     boolean serviceBound = Boolean.FALSE;
     private MediaPlayerService mediaPlayerService;
     private List<Musica> musicas;
+    private Filme filme;
     private MusicaService musicaService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -68,24 +69,26 @@ public class MusicasFragment extends BaseFragment {
         musicaService = ApplicationService.getInstance().getMusicaService();
         Bundle arguments = getArguments();
         if (arguments != null) {
-            Filme filme = (Filme) arguments.getSerializable(FILME);
-            carregarMusicas(filme);
+            this.filme = (Filme) arguments.getSerializable(FILME);
         }
     }
 
-    @Nullable
+
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View createFragmentView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_musicas, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewMusicas);
         progressBarMusicas = (ProgressBar) view.findViewById(R.id.progressRecyclerViewMusic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(Boolean.TRUE);
-
-        esconderListaMusicas();
-
         return view;
+    }
+
+    @Override
+    void startFragmentTask() {
+        esconderListaMusicas();
+        carregarMusicas(filme);
     }
 
     /**
