@@ -27,6 +27,15 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />
 
+            <ProgressBar
+                android:id="@+id/progressRecyclerViewPoster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
+                android:visibility="invisible"
+                android:layout_gravity="center|center_vertical"
+                android:gravity="center|center_vertical" />
+
         </android.support.design.widget.CollapsingToolbarLayout>
 
 
