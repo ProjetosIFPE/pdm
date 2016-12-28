@@ -30,7 +30,7 @@ public class MusicaService extends BaseService {
         final String API_PASSWORD = context.getString(R.string.API_PASSWORD_TUNEFIND);
         String url = URL_PESQUISA_MUSICA_POR_FILME
                 .replace("{movie}", converteFilmeParaPesquisa(filme));
-        return super.parseJson(Musica[].class,
+        return super.parseJsonArray(Musica[].class,
                 get(url, API_USERNAME, API_PASSWORD), Musica.ROOT_JSON_OBJECT);
     }
 

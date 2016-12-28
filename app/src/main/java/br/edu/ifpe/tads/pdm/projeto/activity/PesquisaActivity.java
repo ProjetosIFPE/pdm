@@ -26,7 +26,7 @@ public class PesquisaActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesquisa);
         setUpToolbar();
-        setUpNavDrawer();
+        setUpMenuNavegacao(savedInstanceState);
 
         if (savedInstanceState == null) {
             doSearch(Boolean.TRUE);

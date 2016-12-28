@@ -1,16 +1,18 @@
 package br.edu.ifpe.tads.pdm.projeto.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,18 +27,21 @@ import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.MusicaService;
 import br.edu.ifpe.tads.pdm.projeto.service.MediaPlayerService;
-import br.edu.ifpe.tads.pdm.projeto.util.IOUtil;
+import br.edu.ifpe.tads.pdm.projeto.util.PreferencesUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 
 
-public class MusicasFragment extends BaseConnectivityFragment {
+public class MusicasFragment extends BaseConnectivityFragment implements MediaPlayerService.MediaPlayerServiceListener {
 
     public static final String SERVICE_BOUND = "SERVICE_BOUND";
     public static final String FILME = "FILME";
+    public static final String INTENT_ATUALIZA_MUSICA = "br.edu.ifpe.tads.pdm.projeto.INTENT_ATUALIZA_MUSICA";
+
     protected RecyclerView recyclerView;
     protected ProgressBar progressBarMusicas;
     boolean serviceBound = Boolean.FALSE;
     private MediaPlayerService mediaPlayerService;
+    private GerenciadorMusica gerenciadorMusica;
     private List<Musica> musicas;
     private Filme filme;
     private MusicaService musicaService;
@@ -46,6 +51,7 @@ public class MusicasFragment extends BaseConnectivityFragment {
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             mediaPlayerService = binder.getService();
+            mediaPlayerService.setMediaPlayerServiceListener(MusicasFragment.this);
             serviceBound = Boolean.TRUE;
         }
 
@@ -62,6 +68,14 @@ public class MusicasFragment extends BaseConnectivityFragment {
         return musicasFragment;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (serviceBound) {
+            getActivity().unbindService(serviceConnection);
+        }
+        getActivity().unregisterReceiver(gerenciadorMusica);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +84,7 @@ public class MusicasFragment extends BaseConnectivityFragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             this.filme = (Filme) arguments.getSerializable(FILME);
+            this.gerenciadorMusica = registrarGerenciadorMusicas();
         }
     }
 
@@ -126,20 +141,7 @@ public class MusicasFragment extends BaseConnectivityFragment {
             removerAlertaNenhumResultado();
             atualizarRecyclerView(musicas);
         } else {
-            adicionarAlertaNenhumResultadoDisponível();
-        }
-    }
-
-    /**
-     * Remover fragmento de alerta de nenhum resultado disponível
-     */
-    public void removerAlertaNenhumResultado() {
-        Fragment fragment = getChildFragmentManager().findFragmentByTag(
-                AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
-        if (fragment != null) {
-            getChildFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .remove(fragment).commit();
+            adicionarAlertaNenhumResultadoDisponível(R.id.fragment_musicas);
         }
     }
 
@@ -148,19 +150,6 @@ public class MusicasFragment extends BaseConnectivityFragment {
         recyclerView.setAdapter(new MusicaAdapter(getContext(), musicas, onClickMusica()));
     }
 
-
-    /**
-     * Adiciona o fragmento com um alerta de nenhum resultado disponível
-     */
-    public void adicionarAlertaNenhumResultadoDisponível() {
-        Bundle arguments = new Bundle();
-        AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
-        if (getActivity() != null) {
-            getChildFragmentManager().beginTransaction()
-                    .add(R.id.fragment_musicas, alertNoResultsFragment,
-                            AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
-        }
-    }
 
     public MusicaAdapter.MusicaOnClickListener onClickMusica() {
         return new MusicaAdapter.MusicaOnClickListener() {
@@ -203,16 +192,38 @@ public class MusicasFragment extends BaseConnectivityFragment {
 
     private void playAudio(int indexMusicaTocando) {
         if (!serviceBound) {
-            IOUtil.putInt(getContext(), MediaPlayerService.AUDIO_INDEX, indexMusicaTocando);
-            IOUtil.putList(getContext(), MediaPlayerService.AUDIO_LIST, musicas);
+            PreferencesUtil.putInt(getContext(), MediaPlayerService.AUDIO_INDEX, indexMusicaTocando);
+            PreferencesUtil.putList(getContext(), MediaPlayerService.AUDIO_LIST, musicas);
 
             Intent playerIntent = new Intent(getActivity(), MediaPlayerService.class);
+            playerIntent.setAction(MediaPlayerService.ACTION_NEW_MUSIC);
             getActivity().startService(playerIntent);
             getActivity().bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
-            IOUtil.putInt(getContext(), MediaPlayerService.AUDIO_INDEX, indexMusicaTocando);
+            PreferencesUtil.putInt(getContext(), MediaPlayerService.AUDIO_INDEX, indexMusicaTocando);
             Intent broadcastIntent = new Intent(MediaPlayerService.BROADCAST_PLAY_NEW_AUDIO);
             getActivity().sendBroadcast(broadcastIntent);
+        }
+    }
+
+
+    private GerenciadorMusica registrarGerenciadorMusicas() {
+        GerenciadorMusica gerenciadorMusica = new GerenciadorMusica();
+        IntentFilter intentFilter = new IntentFilter(INTENT_ATUALIZA_MUSICA);
+        getActivity().registerReceiver(gerenciadorMusica, intentFilter);
+        return gerenciadorMusica;
+    }
+
+    @Override
+    public void onChangeMusica(Musica musica) {
+        Log.i(TAG, musica.getTitulo());
+    }
+
+    public class GerenciadorMusica extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
         }
     }
 }

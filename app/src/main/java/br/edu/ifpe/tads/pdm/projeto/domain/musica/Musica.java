@@ -22,6 +22,8 @@ public class Musica implements Serializable {
     @SerializedName("scene")
     private String descricaoCena;
 
+    private Boolean tocando = Boolean.FALSE;
+
     public Long getId() {
         return id;
     }
@@ -64,6 +66,19 @@ public class Musica implements Serializable {
 
     public void setDescricaoCena(String descricaoCena) {
         this.descricaoCena = descricaoCena;
+    }
+
+
+    public Boolean isPlaying() {
+        return tocando;
+    }
+
+    public void play() {
+        tocando = Boolean.TRUE;
+    }
+
+    public void stop() {
+        tocando = Boolean.FALSE;
     }
 
     @Override

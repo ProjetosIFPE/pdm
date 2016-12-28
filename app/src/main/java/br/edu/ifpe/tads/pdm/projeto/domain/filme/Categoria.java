@@ -2,38 +2,48 @@ package br.edu.ifpe.tads.pdm.projeto.domain.filme;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+
 import java.io.Serializable;
 import java.util.List;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by Edmilson on 23/10/2016.
  */
 
 
+@Entity
 public class Categoria implements Serializable {
 
+    private static final long serialVersionUID = -1662918228461407044L;
+
+    @Id
     @SerializedName("id")
-    private Integer id;
+    private Long id;
+
 
     @SerializedName("name")
     private String descricao;
+    
+    public Categoria() {
 
-    public Categoria(Integer id, String descricao){
+    }
+
+    @Generated(hash = 999432211)
+    public Categoria(Long id, String descricao) {
         this.id = id;
         this.descricao = descricao;
     }
 
-    public Categoria() {
-        System.out.print("Sou doglas e sou gay");
-    }
-
     public final static String ROOT_JSON_OBJECT = "genres";
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

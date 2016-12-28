@@ -9,18 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.apache.commons.lang.StringUtils;
-
+import java.io.File;
 import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
+import br.edu.ifpe.tads.pdm.projeto.util.AndroidUtil;
+import br.edu.ifpe.tads.pdm.projeto.util.FileUtil;
+import br.edu.ifpe.tads.pdm.projeto.util.NetworkUtil;
 
 /**
  * Created by Edmilson Santana on 30/09/2016.
@@ -46,7 +46,7 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
     @Override
     public FilmeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.filmes_listitem, parent, false);
+        View view  = inflater.inflate(R.layout.filmes_listitem, parent, false);
         FilmeViewHolder holder = new FilmeViewHolder(view);
         return holder;
     }
@@ -57,10 +57,23 @@ public class FilmeAdapter extends RecyclerView.Adapter<FilmeAdapter.FilmeViewHol
 
         holder.progressBar.setVisibility(View.VISIBLE);
 
-        if (!TextUtils.isEmpty(filme.getUrlPoster())) {
-            Picasso.with(context).load(filme.getUrlPoster()).fit().into(holder.img,
-                    this.getImageLoadCallback(holder));
+        Boolean arquivo = !NetworkUtil.isConnected(context);
+        String urlPoster = "";
+        File arquivoPoster = null;
+        if (arquivo) {
+            arquivoPoster = FileUtil.getArquivoImagem(context, filme.getUrlPoster(arquivo));
+            if (arquivoPoster != null) {
+                Picasso.with(context).load(arquivoPoster).fit().into(holder.img,
+                        this.getImageLoadCallback(holder));
+            }
         } else {
+            urlPoster = filme.getUrlPoster(arquivo);
+            if (!TextUtils.isEmpty(urlPoster)) {
+                Picasso.with(context).load(urlPoster).fit().into(holder.img,
+                        this.getImageLoadCallback(holder));
+            }
+        }
+        if (TextUtils.isEmpty(urlPoster) && arquivoPoster == null) {
             Picasso.with(context).cancelRequest(holder.img);
             Picasso.with(context).load(R.drawable.placeholder).fit().into(holder.img);
             holder.progressBar.setVisibility(View.GONE);

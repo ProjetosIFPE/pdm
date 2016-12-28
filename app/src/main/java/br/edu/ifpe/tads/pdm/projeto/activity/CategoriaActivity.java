@@ -11,11 +11,15 @@ public class CategoriaActivity extends BaseActivity {
 
     public static final String CATEGORIA_FILME = "CATEGORIA_FILME";
 
+    private String categoria;
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        doSearch(Boolean.FALSE);
+        categoria = getIntent()
+                .getStringExtra(CATEGORIA_FILME);
+        doSearch(Boolean.FALSE, categoria);
     }
 
     @Override
@@ -23,16 +27,29 @@ public class CategoriaActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categoria);
         setUpToolbar();
-        setUpNavDrawer();
+        setUpMenuNavegacao(savedInstanceState);
 
         if (savedInstanceState == null) {
-            doSearch(Boolean.TRUE);
+            categoria = getIntent()
+                    .getStringExtra(CATEGORIA_FILME);
+            doSearch(Boolean.TRUE, categoria);
         }
     }
 
-    public void doSearch(Boolean firstSearch) {
-        String categoria = getIntent()
-                .getStringExtra(CATEGORIA_FILME);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CATEGORIA_FILME, categoria);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        categoria = (String) savedInstanceState.get(CATEGORIA_FILME);
+
+    }
+
+    public void doSearch(Boolean firstSearch, String categoria) {
 
         getSupportActionBar().setTitle(categoria);
 

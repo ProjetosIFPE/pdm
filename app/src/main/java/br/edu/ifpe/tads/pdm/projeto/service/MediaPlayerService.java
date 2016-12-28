@@ -29,7 +29,7 @@ import java.util.List;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.musica.Musica;
-import br.edu.ifpe.tads.pdm.projeto.util.IOUtil;
+import br.edu.ifpe.tads.pdm.projeto.util.PreferencesUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.NotificationUtil;
 
 /**
@@ -45,7 +45,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String ACTION_PREVIOUS = "br.edu.ifpe.tads.pdm.projeto.ACTION_PREVIOUS";
     public static final String ACTION_NEXT = "br.edu.ifpe.tads.pdm.projeto.ACTION_NEXT";
     public static final String ACTION_STOP = "br.edu.ifpe.tads.pdm.projeto.ACTION_STOP";
-    public static final String BROADCAST_PLAY_NEW_AUDIO = "br.edu.ifpe.tads.pdm.projeto.BROADCAST_PLAY_NEW_AUDIO";
+    public static final String ACTION_NEW_MUSIC = "br.edu.ifpe.tads.pdm.projeto.ACTION_NEW_MUSIC";
+    public static final String BROADCAST_PLAY_NEW_AUDIO = "br.edu.ifpe.tads.pdm.projeto.ACTION_NEW_MUSIC";
     public static final String AUDIO_INDEX = "AUDIO_INDEX";
     public static final String AUDIO_LIST = "AUDIO_LIST";
     private static int NOTIFICATION_ID = 101;
@@ -63,6 +64,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private Boolean ongoingCall = Boolean.FALSE;
     private PhoneStateListener phoneStateListener;
     private TelephonyManager telephonyManager;
+    private MediaPlayerServiceListener mediaPlayerServiceListener;
 
     private BroadcastReceiver audioBecomingNoisyReceiver = new BroadcastReceiver() {
         @Override
@@ -74,19 +76,25 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            audioIndex = IOUtil.getInt(getApplicationContext(), AUDIO_INDEX);
+            audioIndex = PreferencesUtil.getInt(getApplicationContext(), AUDIO_INDEX);
             if (audioIndex != -1 && audioIndex < musicas.size()) {
                 musicaAtiva = musicas.get(audioIndex);
+                notificarMudancaMusica();
             } else {
                 stopSelf();
             }
-            stopMedia();
-            resetMedia();
-            initMediaPlayer();
-            updateMetadata();
-            buildNotification(MediaPlayerStatus.PLAYING);
+            novaMusica();
         }
     };
+
+    private void novaMusica() {
+
+        stopMedia();
+        resetMedia();
+        initMediaPlayer();
+        updateMetadata();
+        buildNotification(MediaPlayerStatus.PLAYING);
+    }
 
     @Override
     public void onCreate() {
@@ -104,11 +112,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        this.musicas = IOUtil.getList(Musica[].class, getApplicationContext(), AUDIO_LIST);
-        audioIndex = IOUtil.getInt(getApplicationContext(), AUDIO_INDEX);
+        this.musicas = PreferencesUtil.getList(Musica[].class, getApplicationContext(), AUDIO_LIST);
+        audioIndex = PreferencesUtil.getInt(getApplicationContext(), AUDIO_INDEX);
 
         if (audioIndex != -1 && audioIndex < musicas.size()) {
             musicaAtiva = musicas.get(audioIndex);
+            notificarMudancaMusica();
         } else {
             stopSelf();
         }
@@ -120,8 +129,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
         if (mediaSessionManager == null) {
             initMediaSession();
-            initMediaPlayer();
-            buildNotification(MediaPlayerStatus.PLAYING);
         }
 
         handleIncomingActions(intent);
@@ -184,6 +191,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToPrevious() {
                 super.onSkipToPrevious();
+                notificarMudancaMusica();
                 skipToPrevious();
                 updateMetadata();
                 buildNotification(MediaPlayerStatus.PLAYING);
@@ -192,6 +200,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToNext() {
                 super.onSkipToNext();
+                notificarMudancaMusica();
                 skipToNext();
                 updateMetadata();
                 buildNotification(MediaPlayerStatus.PLAYING);
@@ -223,7 +232,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             musicaAtiva = musicas.get(++audioIndex);
         }
 
-        IOUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
+        PreferencesUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
 
         stopMedia();
         resetMedia();
@@ -238,7 +247,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             musicaAtiva = musicas.get(--audioIndex);
         }
 
-        IOUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
+        PreferencesUtil.putInt(getApplicationContext(), AUDIO_INDEX, audioIndex);
 
         stopMedia();
         resetMedia();
@@ -483,6 +492,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .setContentText(musicaAtiva.getNomesArtistas())
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setDeleteIntent(playbackAction(4))
                 .setContentTitle(musicaAtiva.getTitulo())
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", playPauseAction)
@@ -518,6 +528,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 playBackAction.setAction(ACTION_PREVIOUS);
                 pendingIntent = PendingIntent.getService(this, actionNumber, playBackAction, 0);
                 break;
+            case 4:
+                playBackAction.setAction(ACTION_STOP);
+                pendingIntent = PendingIntent.getService(this, actionNumber, playBackAction, 0);
             default:
                 break;
         }
@@ -537,6 +550,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 transportControls.skipToPrevious();
             } else if (ACTION_STOP.equalsIgnoreCase(actionString)) {
                 transportControls.stop();
+            } else if (ACTION_NEW_MUSIC.equalsIgnoreCase(actionString)) {
+                novaMusica();
             }
         }
     }
@@ -547,4 +562,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
+    private void notificarMudancaMusica() {
+        if (mediaPlayerServiceListener != null) {
+            mediaPlayerServiceListener.onChangeMusica(musicaAtiva);
+        }
+    }
+
+    public interface MediaPlayerServiceListener {
+        public void onChangeMusica(Musica musica);
+    }
+
+
+    public void setMediaPlayerServiceListener(MediaPlayerServiceListener mediaPlayerServiceListener) {
+        this.mediaPlayerServiceListener = mediaPlayerServiceListener;
+    }
 }

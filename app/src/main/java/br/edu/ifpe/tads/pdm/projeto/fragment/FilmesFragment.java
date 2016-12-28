@@ -3,7 +3,7 @@ package br.edu.ifpe.tads.pdm.projeto.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +23,8 @@ import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
 import br.edu.ifpe.tads.pdm.projeto.application.ApplicationService;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Categoria;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
-import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDB;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeDao;
+import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeManager;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.FilmeService;
 import br.edu.ifpe.tads.pdm.projeto.listener.EndlessRecyclerViewScrollListener;
 import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
@@ -40,8 +41,6 @@ public class FilmesFragment extends BaseConnectivityFragment {
 
     public static final String FILMES_POR_POPULARIDADE = "FILMES_POR_POPULARIDADE";
 
-    public static final String FILMES_FAVORITOS = "FILMES_FAVORITOS";
-
     protected RecyclerView recyclerView;
 
     protected ProgressBar progressRecyclerView;
@@ -54,13 +53,13 @@ public class FilmesFragment extends BaseConnectivityFragment {
 
     private Boolean lancamento = Boolean.FALSE;
 
-    private Boolean favoritos = Boolean.FALSE;
-
     private List<Filme> filmes;
 
-    private FilmeService filmeService;
+    private FilmeManager filmeManager;
 
     private EndlessRecyclerViewScrollListener scrollListaFilmes;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private int searchPageIndex = 1;
 
@@ -75,15 +74,13 @@ public class FilmesFragment extends BaseConnectivityFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ApplicationService.getInstance().getBus().register(this);
-        filmeService = ApplicationService.getInstance().getFilmeService();
-
+        filmeManager = ApplicationService.getInstance().getFilmeManager();
         Bundle arguments = getArguments();
         if (arguments != null) {
             titulo = arguments.getString(FILMES_POR_TITULO, "");
             descricaoCategoria = arguments.getString(FILMES_POR_CATEGORIA, "");
             popularidade = arguments.getBoolean(FILMES_POR_POPULARIDADE, Boolean.FALSE);
             lancamento = arguments.getBoolean(FILMES_POR_DATA_LANCAMENTO, Boolean.FALSE);
-            favoritos = arguments.getBoolean(FILMES_FAVORITOS, Boolean.FALSE);
         }
     }
 
@@ -93,6 +90,8 @@ public class FilmesFragment extends BaseConnectivityFragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         progressRecyclerView = (ProgressBar) view.findViewById(R.id.progressRecyclerView);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefresh);
+        swipeRefreshLayout.setOnRefreshListener(onRefreshListener());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         scrollListaFilmes = criarScrollListaFilmes();
         recyclerView.addOnScrollListener(scrollListaFilmes);
@@ -109,6 +108,22 @@ public class FilmesFragment extends BaseConnectivityFragment {
         consultarFilmes();
     }
 
+    /**
+     * Cria o listener para a ação de refresh na lista de filmes.
+     *
+     * @return
+     */
+    private SwipeRefreshLayout.OnRefreshListener onRefreshListener() {
+        return new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (NetworkUtil.isConnected(getContext())) {
+                    consultarFilmes();
+                }
+                swipeRefreshLayout.setRefreshing(Boolean.FALSE);
+            }
+        };
+    }
 
     /**
      * Cria o listener para o scroll da lista de filmes
@@ -134,26 +149,10 @@ public class FilmesFragment extends BaseConnectivityFragment {
             consultarFilmesPorCategoria(descricaoCategoria);
         } else if (!titulo.isEmpty()) {
             consultarFilmes(titulo);
-        } else if (favoritos) {
-            consultarFilmesFavoritos();
         }
         return false;
     }
 
-
-
-    /**
-     * Adiciona o fragmento com um alerta de nenhum resultado disponível
-     */
-    private void adicionarAlertaNenhumResultadoDisponível() {
-        Bundle arguments = new Bundle();
-        AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
-        if (getActivity() != null) {
-            getChildFragmentManager().beginTransaction()
-                    .add(R.id.fragment_filmes, alertNoResultsFragment,
-                            AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
-        }
-    }
 
     /**
      * Inicia a tarefa assíncrona que realiza a pesquisa de filmes por ordem de lancamento
@@ -169,7 +168,7 @@ public class FilmesFragment extends BaseConnectivityFragment {
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                return filmeService.getLancamentos(getContext(), searchPageIndex);
+                return filmeManager.getLancamentos(getContext(), searchPageIndex);
             }
 
             @Override
@@ -194,7 +193,7 @@ public class FilmesFragment extends BaseConnectivityFragment {
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                return filmeService.getPopulares(getContext(), searchPageIndex);
+                return filmeManager.getPopulares(getContext(), searchPageIndex);
             }
 
             @Override
@@ -221,7 +220,7 @@ public class FilmesFragment extends BaseConnectivityFragment {
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                return filmeService.getFilmes(getContext(), titulo);
+                return filmeManager.getFilmes(getContext(), titulo);
             }
 
             @Override
@@ -247,8 +246,8 @@ public class FilmesFragment extends BaseConnectivityFragment {
         return new TaskListener<List<Filme>>() {
             @Override
             public List<Filme> execute() throws Exception {
-                Categoria categoria = filmeService.getCategoria(getContext(), descricaoCategoria);
-                return filmeService.getFilmes(getContext(), categoria, searchPageIndex);
+                Categoria categoria = filmeManager.getCategoria(getContext(), descricaoCategoria);
+                return filmeManager.getFilmes(getContext(), categoria, searchPageIndex);
             }
 
             @Override
@@ -259,31 +258,6 @@ public class FilmesFragment extends BaseConnectivityFragment {
         };
     }
 
-    /**
-     * Inicia a tarefa assíncrona que realiza a pesquisa de filmes favoritos
-     **/
-    private void consultarFilmesFavoritos() {
-        startTask(getFilmesFavoritos());
-    }
-
-    /**
-     * Realiza a pesquisa de filmes por categoria
-     **/
-    private TaskListener<List<Filme>> getFilmesFavoritos() {
-        return new TaskListener<List<Filme>>() {
-            @Override
-            public List<Filme> execute() throws Exception {
-                FilmeDB filmeDB = new FilmeDB(getContext());
-                return filmeDB.getFavoritos();
-            }
-
-            @Override
-            public void updateView(List<Filme> filmes) {
-                verificarResultadoConsultaFilmes(filmes);
-            }
-
-        };
-    }
 
     private void verificarResultadoConsultaFilmes(List<Filme> filmes) {
         if (filmes != null && !filmes.isEmpty()) {
@@ -291,7 +265,7 @@ public class FilmesFragment extends BaseConnectivityFragment {
             atualizarRecyclerView(filmes);
         } else {
             esconderResultados();
-            adicionarAlertaNenhumResultadoDisponível();
+            adicionarAlertaNenhumResultadoDisponível(R.id.fragment_filmes);
         }
     }
 
@@ -324,8 +298,10 @@ public class FilmesFragment extends BaseConnectivityFragment {
      */
     private void atualizarDadosRecyclerView(List<Filme> novosFilmes) {
         if (this.filmes != null && recyclerView != null) {
-            filmes.addAll(novosFilmes);
-            notificarAtualizacoesAdapter();
+            if (!this.filmes.containsAll(novosFilmes)) {
+                filmes.addAll(novosFilmes);
+                notificarAtualizacoesAdapter();
+            }
         }
     }
 
@@ -402,30 +378,5 @@ public class FilmesFragment extends BaseConnectivityFragment {
         };
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ApplicationService.getInstance().getBus().unregister(this);
-    }
-
-    @Subscribe
-    public void atualizarListaFilmes(String refresh) {
-        consultarFilmes();
-    }
-
-
-
-    /**
-     * Remover fragmento de alerta de nenhum resultado disponível
-     */
-    private void removerAlertaNenhumResultado() {
-        Fragment fragment = getChildFragmentManager().findFragmentByTag(
-                AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
-        if (fragment != null) {
-            getChildFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .remove(fragment).commit();
-        }
-    }
 
 }

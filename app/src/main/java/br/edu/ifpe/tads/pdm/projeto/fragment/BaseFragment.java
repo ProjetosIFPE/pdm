@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.util.NetworkUtil;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
@@ -34,6 +35,33 @@ public abstract class BaseFragment extends Fragment {
 
     protected void toast(String s) {
         Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Adiciona o fragmento com um alerta de nenhum resultado disponível
+     */
+    protected void adicionarAlertaNenhumResultadoDisponível(int fragmentId) {
+        Bundle arguments = new Bundle();
+        AlertNoResultsFragment alertNoResultsFragment = AlertNoResultsFragment.newInstance(arguments);
+        if (getActivity() != null) {
+            getChildFragmentManager().beginTransaction()
+                    .add(fragmentId, alertNoResultsFragment,
+                            AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT).commit();
+        }
+    }
+
+
+    /**
+     * Remover fragmento de alerta de nenhum resultado disponível
+     */
+    protected void removerAlertaNenhumResultado() {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(
+                AlertNoResultsFragment.ALERT_NO_RESULTS_FRAGMENT);
+        if (fragment != null) {
+            getChildFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .remove(fragment).commit();
+        }
     }
 
 

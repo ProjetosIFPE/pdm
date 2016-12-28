@@ -3,6 +3,8 @@ package br.edu.ifpe.tads.pdm.projeto.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.fragment.NavigationViewFragment;
 import br.edu.ifpe.tads.pdm.projeto.fragment.dialog.AboutDialog;
 import br.edu.ifpe.tads.pdm.projeto.util.Task;
 import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
@@ -26,7 +29,7 @@ import br.edu.ifpe.tads.pdm.projeto.util.TaskListener;
 /**
  * Created by Edmilson Santana on 26/09/2016.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements NavigationViewFragment.MenuNavegacaoListener {
 
     protected final String TAG = getClass().getSimpleName();
     protected DrawerLayout drawerLayout;
@@ -50,35 +53,49 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * Configura o menu lateral
      */
-    protected void setUpNavDrawer() {
+    protected void setUpMenuNavegacao(Bundle savedInstanceState) {
         final ActionBar actionBar = getSupportActionBar();
 
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionBar.setDisplayHomeAsUpEnabled(Boolean.TRUE);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if  (savedInstanceState == null) {
+            Bundle arguments = new Bundle();
+            NavigationViewFragment navigationViewFragment = NavigationViewFragment.newInstance(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.drawer_layout, navigationViewFragment).commit();
+        }
+
+    }
+
+
+    @Override
+    public void inicializarMenuNavegacao(NavigationView navigationView) {
+        this.navigationView = navigationView;
 
         selecionarItemMenuNavegacao();
 
         if (navigationView != null && drawerLayout != null) {
-            navigationView.setNavigationItemSelectedListener(
-                    new NavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(MenuItem item) {
-                            item.setChecked(Boolean.TRUE);
-                            closeDrawner();
-                            onNavDrawerItemSelected(item);
-                            return false;
-                        }
-                    });
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    item.setChecked(Boolean.TRUE);
+                    closeDrawner();
+                    onNavDrawerItemSelected(item);
+                    return false;
+                }
+            });
         }
     }
 
+    /**
+     * Marcar item selecionado no menu de navegação
+     */
     public void selecionarItemMenuNavegacao() {
         if (navigationView != null) {
             Intent intent = getIntent();
-            if ( intent != null ) {
+            if (intent != null) {
                 int idMenuSelecionado = intent.getIntExtra(ID_MENU_SELECIONADO, 0);
                 MenuItem item = navigationView.getMenu().findItem(idMenuSelecionado);
                 item.setChecked(Boolean.TRUE);

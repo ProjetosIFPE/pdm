@@ -1,9 +1,6 @@
 package br.edu.ifpe.tads.pdm.projeto.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
@@ -20,7 +17,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpToolbar();
-        setUpNavDrawer();
+        setUpMenuNavegacao(savedInstanceState);
 
         FilmesPagerAdapter filmesPagerAdapter = new FilmesPagerAdapter(getContext(),
                 getSupportFragmentManager());
@@ -36,11 +33,6 @@ public class MainActivity extends BaseActivity {
         super.createSearchWidget(menu);
         return Boolean.TRUE;
     }
-
-
-
-
-
 
 
 }

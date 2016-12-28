@@ -1,16 +1,24 @@
 package br.edu.ifpe.tads.pdm.projeto.domain.filme;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
 import br.edu.ifpe.tads.pdm.projeto.domain.BaseService;
 import br.edu.ifpe.tads.pdm.projeto.util.DateUtil;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Edmilson Santana on 26/09/2016.
@@ -22,9 +30,23 @@ public class FilmeService extends BaseService {
     private static final String URL_PESQUISA_CATEGORIA = "https://api.themoviedb.org/3/genre/movie/list?api_key={key}&language={language}";
     private static final String URL_PESQUISA_FILME_POR_POPULARIDADE = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}";
     private static final String URL_PESQUISA_FILME_POR_LANCAMENTO = "https://api.themoviedb.org/3/discover/movie?api_key={key}&language={language}&sort_by={sort}&page={page}&primary_release_date.lte={release-date}";
+    private static final String URL_PESQUISA_VIDEOS_FILME = "https://api.themoviedb.org/3/movie/{id}/videos?api_key={key}";
 
 
-    private final int FIRST_PAGE = 1;
+    /**
+     * Busca os videos de um filme no TMDB
+     *
+     * @param context
+     * @param idFilme
+     * @return
+     */
+    public List<Video> getVideosFilme(Context context, Long idFilme) {
+        final String API_KEY = context.getString(R.string.API_KEY_TMDB);
+        String url = URL_PESQUISA_VIDEOS_FILME
+                .replace("{key}", API_KEY)
+                .replace("{id}", String.valueOf(idFilme));
+        return super.parseJsonArray(Video[].class, get(url), Video.ROOT_JSON_OBJECT);
+    }
 
     /**
      * Realiza a consulta dos géneros que estão disponíveis no TMDB
@@ -37,7 +59,7 @@ public class FilmeService extends BaseService {
         String url = URL_PESQUISA_CATEGORIA
                 .replace("{key}", API_KEY)
                 .replace("{language}", FilmeService.TMDBParameters.LANGUAGE_PT_BR);
-        return super.parseJson(Categoria[].class, get(url), Categoria.ROOT_JSON_OBJECT);
+        return super.parseJsonArray(Categoria[].class, get(url), Categoria.ROOT_JSON_OBJECT);
     }
 
     /**
@@ -51,17 +73,6 @@ public class FilmeService extends BaseService {
         Categoria categoria = new Categoria();
         categoria.setDescricao(descricaoCategoria);
         return categorias.get(categorias.indexOf(categoria));
-    }
-
-
-    /**
-     * Obtém os filmes que foram adicionados recentemente
-     *
-     * @param context
-     * @return
-     */
-    public List<Filme> getLancamentos(Context context) {
-        return getLancamentos(context, FIRST_PAGE);
     }
 
 
@@ -85,16 +96,6 @@ public class FilmeService extends BaseService {
 
 
     /**
-     * Obtém os filmes por popularidade
-     *
-     * @param context
-     * @return
-     */
-    public List<Filme> getPopulares(Context context) {
-        return getPopulares(context, FIRST_PAGE);
-    }
-
-    /**
      * Obtém os filmes por popularidade, permitindo paginação
      *
      * @param context
@@ -111,17 +112,6 @@ public class FilmeService extends BaseService {
         return parseJsonFilmes(context, url);
     }
 
-
-    /**
-     * Realiza a consulta de filmes no TMDB, por categoria
-     *
-     * @param context
-     * @param categoria
-     * @return
-     */
-    public List<Filme> getFilmes(Context context, Categoria categoria) {
-        return this.getFilmes(context, categoria, FIRST_PAGE);
-    }
 
     /**
      * Realiza a consulta de filmes no TMDB, por categoria,
@@ -142,17 +132,6 @@ public class FilmeService extends BaseService {
         return parseJsonFilmes(context, url);
     }
 
-
-    /**
-     * Realiza a consulta de filmes no TMDB, por título
-     *
-     * @param context
-     * @param titulo
-     * @return
-     */
-    public List<Filme> getFilmes(Context context, String titulo) {
-        return this.getFilmes(context, titulo, FIRST_PAGE);
-    }
 
     /**
      * Realiza a consulta de filmes no TMDB, por título,
@@ -180,7 +159,7 @@ public class FilmeService extends BaseService {
      * @return
      */
     private List<Filme> parseJsonFilmes(Context context, String url) {
-        List<Filme> filmes = super.parseJson(Filme[].class, get(url), Filme.ROOT_JSON_OBJECT);
+        List<Filme> filmes = super.parseJsonArray(Filme[].class, get(url), Filme.ROOT_JSON_OBJECT);
         return preencherCategoriasFilmes(context, filmes);
     }
 
@@ -193,7 +172,7 @@ public class FilmeService extends BaseService {
      */
     public List<Filme> preencherCategoriasFilmes(Context context, List<Filme> filmes) {
         List<Categoria> categorias = getCategorias(context);
-        Map<Integer, Categoria> categoriasPorId = categoriasPorId(categorias);
+        Map<Long, Categoria> categoriasPorId = categoriasPorId(categorias);
         List<Filme> filmesAtualizados = new ArrayList<>(filmes);
         for (Filme filme : filmes) {
             filme.atualizarCategorias(categoriasPorId);
@@ -201,14 +180,15 @@ public class FilmeService extends BaseService {
         return filmesAtualizados;
     }
 
+
     /**
      * Cria um mapa de categorias por id de categoria
      *
      * @param categorias
      * @return
      */
-    public Map<Integer, Categoria> categoriasPorId(List<Categoria> categorias) {
-        Map<Integer, Categoria> categoriasPorId = new HashMap<>();
+    public Map<Long, Categoria> categoriasPorId(List<Categoria> categorias) {
+        Map<Long, Categoria> categoriasPorId = new HashMap<>();
         for (Categoria categoria : categorias) {
             if (!categoriasPorId.containsKey(categoria.getId())) {
                 categoriasPorId.put(categoria.getId(), categoria);

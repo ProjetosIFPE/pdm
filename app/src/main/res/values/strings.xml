@@ -29,7 +29,17 @@
     <string name="sem_conexao">Sem conexão</string>
     <string name="trailer">Trailer</string>
     <string name="about_dialog_text"><![CDATA[ <b>Aplicativo de Trilhas Sonoras</b><br> Versao %s<br><br> ]]></string>
+    <string name="share_intent_text"><![CDATA[ Confira a trilha sonora de %s, no <b>Aplicativo de Trilhas Sonoras</b>]]></string>
     <string name="about_dialog_title">Sobre</string>
     <string name="about_github_link">https://github.com/ProjetosIFPE/pdm</string>
+    <string name="youtube_link">http://www.youtube.com/watch?v=%s</string>
     <string name="ok">Ok</string>
+    <string name="compartilhar">Compartilhar</string>
+    <string name="videos">Videos</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="filme_adicionado_em_favoritos">Filme adicionado aos favoritos</string>
+    <string name="filme_removido_dos_favoritos">Filme removido dos favoritos</string>
+    <string name="categorias">Categorias</string>
 </resources>

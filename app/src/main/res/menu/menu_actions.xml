@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_favorite"
-        android:title="@string/favorito"
-        android:icon="@drawable/ic_favorite"
-        app:showAsAction="always" />
+        android:id="@+id/menu_item_share"
+        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:title="@string/compartilhar"
+        app:showAsAction="ifRoom" />
 </menu>

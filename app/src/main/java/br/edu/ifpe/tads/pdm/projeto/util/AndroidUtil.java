@@ -2,6 +2,7 @@ package br.edu.ifpe.tads.pdm.projeto.util;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.util.Log;
 
 /**
@@ -23,5 +24,13 @@ public class AndroidUtil {
             }
         }
         return versionName;
+    }
+
+    public static Boolean isOrientationLandscape(Context context) {
+        int orientation = -1;
+        if (context != null) {
+            orientation = context.getResources().getConfiguration().orientation;
+        }
+        return Configuration.ORIENTATION_LANDSCAPE == orientation;
     }
 }

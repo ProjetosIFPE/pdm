@@ -1,5 +1,7 @@
 package br.edu.ifpe.tads.pdm.projeto.domain;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -10,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -17,6 +20,7 @@ import org.parceler.apache.commons.lang.time.DateUtils;
 
 import com.google.gson.JsonObject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -66,6 +70,23 @@ public class BaseService {
         }
         return body;
     }
+
+    public Bitmap getBitmap(String url) {
+        Bitmap bitmap = null;
+        try {
+            Request request = new Request.Builder()
+                    .url(url).build();
+
+            Response response = client.newCall(request).execute();
+            response.body().byteStream();
+            InputStream input = response.body().byteStream();
+            bitmap = BitmapFactory.decodeStream(input);
+            return bitmap;
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return bitmap;
+    }
     /**
      * Get a Url, com autenticação de usuário e senha
      * @return String
@@ -105,11 +126,33 @@ public class BaseService {
      *  Faz o parse de uma string json, removendo o objeto root, retornando um
      *  array da classe especificada no parametro
      * **/
-    public <T> List<T> parseJson(Class<T[]> clazz, String json, String rootElement) {
+    public <T> List<T> parseJsonArray(Class<T[]> clazz, String json, String rootElement) {
+        List<T> lista = new ArrayList<>();
+        try {
+            final Gson gson = createGson();
+            Map<String, Object> map = gson.fromJson(json, Map.class);
+            String jsonArray = gson.toJson(map.get(rootElement));
+            lista.addAll(Arrays.asList(gson.fromJson(jsonArray, clazz)));
+        } catch (JsonSyntaxException e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return lista;
+    }
+
+    /**
+     *  Faz o parse de uma string json, removendo o objeto root, retornando um
+     *  objeto da classe especificada no parametro
+     *  @param clazz
+     *  @param json
+     *  @param rootElement
+     *  @return
+     * **/
+    public <T> T parseJsonObject(Class<T> clazz, String json, String rootElement) {
         final Gson gson = createGson();
         Map<String, Object> map = gson.fromJson(json, Map.class);
         String jsonArray = gson.toJson(map.get(rootElement));
-        return new ArrayList<>(Arrays.asList(gson.fromJson(jsonArray, clazz)));
+        return gson.fromJson(jsonArray, clazz);
     }
 
     /**

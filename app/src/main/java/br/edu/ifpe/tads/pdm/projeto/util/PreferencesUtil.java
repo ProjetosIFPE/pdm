@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Edmilson on 27/11/2016.
  */
 
-public class IOUtil {
+public class PreferencesUtil {
     private static final String APP_CACHE = "br.edu.ifpe.tads.pdm.projeto.util.STORAGE";
 
     public static <T> void putList(Context context, String key, List<T> value) {

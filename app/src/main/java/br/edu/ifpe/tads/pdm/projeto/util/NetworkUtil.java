@@ -1,6 +1,7 @@
 package br.edu.ifpe.tads.pdm.projeto.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -16,4 +17,5 @@ public class NetworkUtil {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
+
 }

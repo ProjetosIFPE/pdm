@@ -7,10 +7,11 @@
     android:background="@color/accent"
     android:foreground="?attr/selectableItemBackground"
     app:cardElevation="3dp"
-    android:layout_margin="6dp"
+    android:layout_margin="7dp"
+    android:layout_marginBottom="9dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="false"
-    card_view:cardCornerRadius="60dp"
+    card_view:cardCornerRadius="180dp"
     card_view:cardElevation="6dp">
 
     <TextView
@@ -18,5 +19,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/accent"
-        android:padding="16dp" />
+        android:padding="6dp" />
 </android.support.v7.widget.CardView>

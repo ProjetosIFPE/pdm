@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.fragment.FavoritosFragment;
 import br.edu.ifpe.tads.pdm.projeto.fragment.FilmesFragment;
 
 /**
@@ -35,19 +36,22 @@ public class FilmesPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment = null;
         Bundle arguments = new Bundle();
         switch (position) {
             case 0:
                 arguments.putBoolean(FilmesFragment.FILMES_POR_POPULARIDADE, Boolean.TRUE);
+                fragment = FilmesFragment.newInstance(arguments);
                 break;
             case 1:
                 arguments.putBoolean(FilmesFragment.FILMES_POR_DATA_LANCAMENTO, Boolean.TRUE);
+                fragment = FilmesFragment.newInstance(arguments);
                 break;
             case 2:
-                arguments.putBoolean(FilmesFragment.FILMES_FAVORITOS, Boolean.TRUE);
+                fragment = FavoritosFragment.newInstance(arguments);
                 break;
         }
-        return FilmesFragment.newInstance(arguments);
+        return fragment;
     }
 
     @Override
