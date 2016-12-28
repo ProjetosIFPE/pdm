@@ -10,8 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.apache.commons.lang.StringUtils;
@@ -19,6 +22,7 @@ import org.parceler.apache.commons.lang.StringUtils;
 import java.io.File;
 
 import br.edu.ifpe.tads.pdm.projeto.R;
+import br.edu.ifpe.tads.pdm.projeto.adapter.FilmeAdapter;
 import br.edu.ifpe.tads.pdm.projeto.adapter.FilmePagerAdapter;
 import br.edu.ifpe.tads.pdm.projeto.domain.filme.Filme;
 import br.edu.ifpe.tads.pdm.projeto.util.Constantes;
@@ -27,7 +31,8 @@ import br.edu.ifpe.tads.pdm.projeto.util.NetworkUtil;
 
 public class FilmeActivity extends BaseActivity {
 
-    private ShareActionProvider shareActionProvider;
+
+    protected ProgressBar progressBarImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,8 @@ public class FilmeActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(Boolean.TRUE);
 
         final Filme filme = (Filme) getIntent().getSerializableExtra(Constantes.FILME);
+        progressBarImg = (ProgressBar) findViewById(R.id.progressRecyclerViewPlanoFundo);
+        progressBarImg.setVisibility(View.VISIBLE);
 
         carregarDetalhesFilme(filme);
 
@@ -53,9 +60,9 @@ public class FilmeActivity extends BaseActivity {
 
     public void carregarDetalhesFilme(Filme filme) {
 
-
         TextView filmeTitulo = (TextView) findViewById(R.id.filme_titulo);
         TextView filmeTituloOriginal = (TextView) findViewById(R.id.filme_titulo_original);
+
 
         filmeTitulo.setText(filme.getTitulo());
         filmeTituloOriginal.setText(filme.getTituloOriginal());
@@ -64,25 +71,23 @@ public class FilmeActivity extends BaseActivity {
 
     }
 
+    @Deprecated
     public void carregarImagensFilme(Filme filme) {
         ImageView filmePlanoFundo = (ImageView) findViewById(R.id.filme_plano_fundo);
         ImageView filmePoster = (ImageView) findViewById(R.id.filme_poster);
-
         Boolean arquivo = !NetworkUtil.isConnected(this);
-        String urlPlanoFundo;
-        File arquivoPlanoFundo;
+        String urlPlanoFundo = "";
+        File arquivoPlanoFundo = null;
         String urlPoster = "";
         File arquivoPoster = null;
         if (arquivo) {
             arquivoPoster = FileUtil.getArquivoImagem(getContext(), filme.getUrlPoster(arquivo));
             if (arquivoPoster != null) {
                 Picasso.with(getContext()).load(arquivoPoster).fit().into(filmePoster);
-
             }
             arquivoPlanoFundo = FileUtil.getArquivoImagem(getContext(), filme.getUrlPlanoFundo(arquivo));
             if (arquivoPlanoFundo != null) {
-                Picasso.with(getContext()).load(arquivoPlanoFundo).fit().into(filmePlanoFundo);
-
+                Picasso.with(getContext()).load(arquivoPlanoFundo).fit().into(filmePlanoFundo, getImageLoadCallback());
             }
 
         } else {
@@ -93,32 +98,41 @@ public class FilmeActivity extends BaseActivity {
             }
             urlPlanoFundo = filme.getUrlPlanoFundo(arquivo);
             if (!TextUtils.isEmpty(urlPlanoFundo)) {
-                Picasso.with(getContext()).load(urlPlanoFundo).fit().into(filmePlanoFundo);
-
+                Picasso.with(getContext()).load(urlPlanoFundo).fit().into(filmePlanoFundo, getImageLoadCallback());
             }
         }
-    }
 
-    public void compartilharFilme(Filme filme) {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_intent_text, filme.getTitulo()));
-        setShareIntent(shareIntent);
-    }
+        if (StringUtils.isEmpty(urlPlanoFundo) && arquivoPlanoFundo == null) {
+            Picasso.with(getContext()).cancelRequest(filmePlanoFundo);
+            Picasso.with(getContext()).load(R.drawable.placeholder).fit().into(filmePlanoFundo);
+            mostrarPlanoFundo();
+        }
 
-
-    private void setShareActionProvider(Menu menu) {
-
-        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-    }
-
-    private void setShareIntent(Intent shareIntent) {
-        if (shareActionProvider != null) {
-            shareActionProvider.setShareIntent(shareIntent);
+        if (StringUtils.isEmpty(urlPoster) && arquivoPoster == null) {
+            Picasso.with(getContext()).cancelRequest(filmePoster);
+            Picasso.with(getContext()).load(R.drawable.placeholder).fit().into(filmePoster);
         }
     }
 
+    public Callback getImageLoadCallback() {
+        return new Callback() {
+            @Override
+            public void onSuccess() {
+                mostrarPlanoFundo();
+
+            }
+
+            @Override
+            public void onError() {
+                mostrarPlanoFundo();
+            }
+        };
+    }
+
+    public void mostrarPlanoFundo() {
+        progressBarImg.setVisibility(View.GONE);
+
+    }
 
     public View.OnClickListener onToolbarNavigationClick() {
         return new View.OnClickListener() {
@@ -128,5 +142,6 @@ public class FilmeActivity extends BaseActivity {
             }
         };
     }
+
 
 }

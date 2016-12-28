@@ -45,6 +45,7 @@ public class CategoriaAdapter extends RecyclerView.Adapter<CategoriaAdapter.Cate
         Categoria categoria = categorias.get(position);
         if (categoria != null) {
             holder.descricaoCategoria.setText(categoria.getDescricao());
+            holder.descricaoCategoria.setOnClickListener(getOnClickListener(holder, position));
         }
     }
 
@@ -60,21 +61,21 @@ public class CategoriaAdapter extends RecyclerView.Adapter<CategoriaAdapter.Cate
         public CategoriaViewHolder(View itemView) {
             super(itemView);
             descricaoCategoria = (TextView) itemView.findViewById(R.id.categoria_descricao);
-
         }
     }
 
     /**
-     *  Aplica a ação de click através da interface CategoriaOnClickListener
-     *  @param filmeViewHolder
-     *  @param position
-     * **/
-    public View.OnClickListener getOnClickListener(final FilmeAdapter.FilmeViewHolder filmeViewHolder, final int position) {
+     * Aplica a ação de click através da interface CategoriaOnClickListener
+     *
+     * @param categoriaViewHolder
+     * @param position
+     **/
+    public View.OnClickListener getOnClickListener(final CategoriaAdapter.CategoriaViewHolder categoriaViewHolder, final int position) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( categoriaOnClickListener != null ) {
-                    categoriaOnClickListener.onClickCategoria(filmeViewHolder.itemView, position);
+                if (categoriaOnClickListener != null) {
+                    categoriaOnClickListener.onClickCategoria(categoriaViewHolder.itemView, position);
                 }
             }
         };

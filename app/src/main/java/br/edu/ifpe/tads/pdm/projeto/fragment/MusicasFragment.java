@@ -35,16 +35,15 @@ public class MusicasFragment extends BaseConnectivityFragment implements MediaPl
 
     public static final String SERVICE_BOUND = "SERVICE_BOUND";
     public static final String FILME = "FILME";
-    public static final String INTENT_ATUALIZA_MUSICA = "br.edu.ifpe.tads.pdm.projeto.INTENT_ATUALIZA_MUSICA";
 
     protected RecyclerView recyclerView;
     protected ProgressBar progressBarMusicas;
     boolean serviceBound = Boolean.FALSE;
     private MediaPlayerService mediaPlayerService;
-    private GerenciadorMusica gerenciadorMusica;
     private List<Musica> musicas;
     private Filme filme;
     private MusicaService musicaService;
+    private Musica musicaTocando;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -74,7 +73,6 @@ public class MusicasFragment extends BaseConnectivityFragment implements MediaPl
         if (serviceBound) {
             getActivity().unbindService(serviceConnection);
         }
-        getActivity().unregisterReceiver(gerenciadorMusica);
     }
 
     @Override
@@ -84,7 +82,6 @@ public class MusicasFragment extends BaseConnectivityFragment implements MediaPl
         Bundle arguments = getArguments();
         if (arguments != null) {
             this.filme = (Filme) arguments.getSerializable(FILME);
-            this.gerenciadorMusica = registrarGerenciadorMusicas();
         }
     }
 
@@ -207,25 +204,24 @@ public class MusicasFragment extends BaseConnectivityFragment implements MediaPl
     }
 
 
-    private GerenciadorMusica registrarGerenciadorMusicas() {
-        GerenciadorMusica gerenciadorMusica = new GerenciadorMusica();
-        IntentFilter intentFilter = new IntentFilter(INTENT_ATUALIZA_MUSICA);
-        getActivity().registerReceiver(gerenciadorMusica, intentFilter);
-        return gerenciadorMusica;
+    /**
+     * Notifica o adapter das alterações na lista
+     * de musicas
+     */
+    private void notificarAtualizacoesAdapter() {
+        if (recyclerView != null) {
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     @Override
     public void onChangeMusica(Musica musica) {
-        Log.i(TAG, musica.getTitulo());
+
     }
 
-    public class GerenciadorMusica extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
-    }
 }
 
 

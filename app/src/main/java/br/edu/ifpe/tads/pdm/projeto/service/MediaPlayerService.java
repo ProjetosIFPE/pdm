@@ -76,10 +76,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             audioIndex = PreferencesUtil.getInt(getApplicationContext(), AUDIO_INDEX);
             if (audioIndex != -1 && audioIndex < musicas.size()) {
                 musicaAtiva = musicas.get(audioIndex);
-                notificarMudancaMusica();
             } else {
                 stopSelf();
             }
@@ -117,7 +117,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
         if (audioIndex != -1 && audioIndex < musicas.size()) {
             musicaAtiva = musicas.get(audioIndex);
-            notificarMudancaMusica();
         } else {
             stopSelf();
         }
@@ -149,6 +148,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
         try {
             mediaPlayer.setDataSource(musicaAtiva.getUrlMusica());
+            notificarMudancaMusica();
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.d(TAG, e.getMessage(), e);
@@ -191,7 +191,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToPrevious() {
                 super.onSkipToPrevious();
-                notificarMudancaMusica();
                 skipToPrevious();
                 updateMetadata();
                 buildNotification(MediaPlayerStatus.PLAYING);
@@ -200,7 +199,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToNext() {
                 super.onSkipToNext();
-                notificarMudancaMusica();
                 skipToNext();
                 updateMetadata();
                 buildNotification(MediaPlayerStatus.PLAYING);
